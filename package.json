@@ -9,8 +9,8 @@
     "type": "module",
     "version": "1.0.0",
     "scripts": {
-        "build": "tsc && prisma generate",
         "start": "node dist/main.js",
+        "postinstall": "tsc",
         "dev": "nodemon --exec bun run src/main.ts",
         "type-check": "tsc --noEmit --watch",
         "lint": "eslint .",
