@@ -2,7 +2,7 @@ import type { RequestHandler } from 'express'
 import { hashPassword } from '@lib/hashPassword'
 import { prisma } from '@utils/prismaClient'
 import { z } from 'zod'
-import { signUpSchema } from 'schemas'
+import { signUpSchema } from '@schemas/index'
 import { omitPassword } from '@lib/utils/omitPassword'
 
 const signUp: RequestHandler = async (request, response) => {

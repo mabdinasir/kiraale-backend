@@ -1,7 +1,10 @@
 import axios from 'axios'
 import { timestamp } from '@utils/timeStamp'
 import type { RequestHandler } from 'express'
-import { StkPushSchema } from 'schemas'
+import { StkPushSchema } from '@schemas/index'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const handleStkPush: RequestHandler = async (request, response) => {
     const { phone, amount } = request.body

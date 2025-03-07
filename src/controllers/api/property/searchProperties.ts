@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express'
 import { prisma } from '@lib/utils/prismaClient'
-import { propertySearchQuerySchema } from 'schemas'
+import { propertySearchQuerySchema } from '@schemas/index'
 
 const searchProperties: RequestHandler = async (request, response) => {
     // Validate query parameters

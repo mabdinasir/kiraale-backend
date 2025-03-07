@@ -9,8 +9,8 @@
     "type": "module",
     "version": "1.0.0",
     "scripts": {
-        "start": "node dist/src/main.js",
-        "postinstall": "tsc && prisma generate",
+        "start": "node dist/main.js",
+        "build": "tsc && resolve-tspaths && prisma generate",
         "dev": "nodemon --exec bun run src/main.ts",
         "type-check": "tsc --noEmit --watch",
         "lint": "eslint . --ignore-pattern 'dist'",
@@ -33,6 +33,7 @@
         "nodemon": "^3.1.9",
         "prettier": "^3.5.0",
         "prisma": "^6.4.1",
+        "resolve-tspaths": "^0.8.23",
         "typescript-eslint": "^8.23.0"
     },
     "peerDependencies": {

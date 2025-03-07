@@ -1,6 +1,6 @@
 import { prisma } from '@lib/utils/prismaClient'
 import type { RequestHandler } from 'express'
-import { mediaSchema } from 'schemas'
+import { mediaSchema } from '@schemas/index'
 
 const addMedia: RequestHandler = async (request, response) => {
     // Validate the request body

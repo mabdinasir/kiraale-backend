@@ -1,7 +1,7 @@
 import getUserById from '@controllers/api/user/getUserById'
 import updateProfile from '@controllers/api/user/updateProfile'
 import type { RouteGroup } from '@models/routes'
-import { authMiddleware } from 'middleware/authMiddleware'
+import { authMiddleware } from '@middleware/authMiddleware'
 
 const userRoutes: RouteGroup = {
     basePath: '/users',

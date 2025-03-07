@@ -1,7 +1,7 @@
 import type { RequestHandler } from 'express'
 import { prisma } from '@utils/prismaClient'
 import { omitPassword } from '@lib/utils/omitPassword'
-import { profileSchema } from 'schemas'
+import { profileSchema } from '@schemas/index'
 import { z } from 'zod'
 
 const updateProfile: RequestHandler = async (request, response) => {

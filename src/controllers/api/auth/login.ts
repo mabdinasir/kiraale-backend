@@ -2,7 +2,7 @@ import type { RequestHandler } from 'express'
 import { z } from 'zod'
 import { verifyPassword } from '@lib/hashPassword'
 import { generateJwtToken } from '@lib/generateJwtToken'
-import { loginSchema } from 'schemas'
+import { loginSchema } from '@schemas/index'
 import { prisma } from '@lib/utils/prismaClient'
 import { omitPassword } from '@lib/utils/omitPassword'
 

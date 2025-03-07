@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express'
 import { prisma } from '@lib/utils/prismaClient'
-import { propertySchema } from 'schemas'
+import { propertySchema } from '@schemas/index'
 
 const addProperty: RequestHandler = async (request, response) => {
     const validationResult = propertySchema.safeParse(request.body)

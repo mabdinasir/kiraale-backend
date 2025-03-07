@@ -3,9 +3,12 @@
 import type { RequestHandler } from 'express'
 import { verifyJwtToken } from '@lib/generateJwtToken'
 import { prisma } from '@lib/utils/prismaClient'
-import { authorizationSchema } from 'schemas'
+import { authorizationSchema } from '@schemas/index'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 export const authMiddleware: RequestHandler = async (request, response, next) => {
     try {

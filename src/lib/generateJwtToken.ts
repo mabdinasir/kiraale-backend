@@ -2,6 +2,9 @@ import jwt from 'jsonwebtoken'
 import type { User } from '@prisma/client'
 import type { JwtPayload } from '@models/jwtPayload'
 import { omitPassword } from './utils/omitPassword'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const SECRET = process.env.JWT_SECRET
 

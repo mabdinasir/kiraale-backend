@@ -1,5 +1,8 @@
 import axios from 'axios'
 import type { NextFunction, Request, Response } from 'express'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 export type RequestExtended = Request & { token?: string }
 

@@ -1,6 +1,6 @@
 import { prisma } from '@lib/utils/prismaClient'
 import type { RequestHandler } from 'express'
-import { contactSchema } from 'schemas/contact.schema'
+import { contactSchema } from '@schemas/index'
 
 const contact: RequestHandler = async (request, response) => {
     const validationResult = contactSchema.safeParse(request.body)

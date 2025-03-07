@@ -2,7 +2,7 @@ import login from '@controllers/api/auth/login'
 import signOut from '@controllers/api/auth/signout'
 import signUp from '@controllers/api/auth/signup'
 import type { RouteGroup } from '@models/routes'
-import { authMiddleware } from 'middleware/authMiddleware'
+import { authMiddleware } from '@middleware/authMiddleware'
 
 const authRoutes: RouteGroup = {
     basePath: '/auth',
