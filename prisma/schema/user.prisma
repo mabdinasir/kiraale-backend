@@ -1,0 +1,35 @@
+model User {
+    id              String      @id @default(uuid())
+    password        String  
+    firstName        String  
+    lastName        String
+    mobile          String      @unique
+    email           String      @unique
+    isSignedIn      Boolean     @default(false)
+    isDeleted       Boolean     @default(false)
+    hasAcceptedTnC  Boolean     @default(false)
+    role            Role        @default(USER)
+    createdAt       DateTime    @default(now())
+    updatedAt       DateTime    @updatedAt
+    properties      Property[]
+
+    // Additional fields
+    profilePicture           String?  
+    bio                     String?  
+    address                 String? 
+    
+    // Agent-specific fields
+    agencyName               String?  
+    licenseNumber            String?  
+    yearsOfExperience        Int?  
+
+    // Identity fields
+    nationalIdNumber         String?  
+    passportNumber           String?  
+}
+
+enum Role {
+    USER
+    MODERATOR
+    AGENT
+}
