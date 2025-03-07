@@ -9,12 +9,12 @@
     "type": "module",
     "version": "1.0.0",
     "scripts": {
-        "start": "node dist/main.js",
-        "postinstall": "tsc",
+        "start": "node dist/src/main.js",
+        "postinstall": "tsc && prisma generate",
         "dev": "nodemon --exec bun run src/main.ts",
         "type-check": "tsc --noEmit --watch",
-        "lint": "eslint .",
-        "lint:fix": "eslint . --fix",
+        "lint": "eslint . --ignore-pattern 'dist'",
+        "lint:fix": "eslint . --fix --ignore-pattern 'dist'",
         "fmt": "prettier --write .",
         "fmt:check": "prettier --check ."
     },
