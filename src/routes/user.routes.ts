@@ -1,5 +1,5 @@
 import getUserById from '@controllers/api/user/getUserById'
-import updateProfile from '@controllers/api/user/updateProfile'
+import updateUserProfile from '@controllers/api/user/updateUserProfile'
 import type { RouteGroup } from '@models/routes'
 import { authMiddleware } from '@middleware/authMiddleware'
 
@@ -13,10 +13,10 @@ const userRoutes: RouteGroup = {
             handler: getUserById,
         },
         {
-            path: '/updateProfile/:id',
+            path: '/updateUserProfile/:id',
             method: 'put',
             middlewares: [authMiddleware],
-            handler: updateProfile,
+            handler: updateUserProfile,
         },
     ],
 }
