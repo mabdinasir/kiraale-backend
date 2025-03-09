@@ -5,13 +5,13 @@ import { profileSchema } from '@schemas/index'
 import { z } from 'zod'
 
 const updateProfile: RequestHandler = async (request, response) => {
-    try {
-        const userId = request.user?.id
-        if (!userId) {
-            response.status(401).json({ success: false, message: 'Unauthorized' })
-            return
-        }
+    const userId = request.user?.id
+    if (!userId) {
+        response.status(400).json({ success: false, message: 'No user ID found in request' })
+        return
+    }
 
+    try {
         // Validate request body
         const profileData = await profileSchema.parseAsync(request.body)
 
@@ -38,6 +38,7 @@ const updateProfile: RequestHandler = async (request, response) => {
                     message: err.message,
                 })),
             })
+            return
         }
 
         response.status(500).json({

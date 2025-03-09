@@ -2,6 +2,7 @@ import getUserById from '@controllers/api/user/getUserById'
 import updateUserProfile from '@controllers/api/user/updateUserProfile'
 import type { RouteGroup } from '@models/routes'
 import { authMiddleware } from '@middleware/authMiddleware'
+import UpdateUserPassword from '@controllers/api/user/UpdateUserPassword'
 
 const userRoutes: RouteGroup = {
     basePath: '/users',
@@ -17,6 +18,12 @@ const userRoutes: RouteGroup = {
             method: 'put',
             middlewares: [authMiddleware],
             handler: updateUserProfile,
+        },
+        {
+            path: '/updateUserPassword/:id',
+            method: 'put',
+            middlewares: [authMiddleware],
+            handler: UpdateUserPassword,
         },
     ],
 }

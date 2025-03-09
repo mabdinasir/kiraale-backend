@@ -19,7 +19,7 @@ const verifyPassword = async (password: string, hashedPassword: string, response
         if (!isPasswordValid) {
             response.status(401).json({
                 success: false,
-                message: 'Wrong email and password combination!',
+                message: 'Wrong password provided. Please try again.',
             })
             return false
         }
