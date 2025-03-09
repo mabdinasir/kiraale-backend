@@ -21,7 +21,10 @@ const login: RequestHandler = async (request, response) => {
         await verifyPassword(userData.password, existingUser?.password || '', response)
 
         // Update user's signed-in status
-        const loggedInUser = await prisma.user.update({ where: { id: existingUser?.id }, data: { isSignedIn: true } })
+        const loggedInUser = await prisma.user.update({
+            where: { id: existingUser?.id },
+            data: { isSignedIn: true, isDeleted: false },
+        })
 
         // Generate JWT and remove password from response
         const jwt = generateJwtToken(loggedInUser)
