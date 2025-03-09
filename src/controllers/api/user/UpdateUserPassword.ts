@@ -1,6 +1,6 @@
 import { hashPassword, verifyPassword } from '@lib/hashPassword'
 import { prisma } from '@lib/utils/prismaClient'
-import { passwordSchema } from '@schemas/profile.schema'
+import { profilePasswordSchema } from '@schemas/profilePassword.schema'
 import type { RequestHandler } from 'express'
 
 const updateUserPassword: RequestHandler = async (request, response) => {
@@ -11,7 +11,7 @@ const updateUserPassword: RequestHandler = async (request, response) => {
     }
 
     // Validate request body
-    const validationResult = passwordSchema.safeParse(request.body)
+    const validationResult = profilePasswordSchema.safeParse(request.body)
 
     if (!validationResult.success) {
         response.status(400).json({
