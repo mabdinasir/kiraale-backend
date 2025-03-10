@@ -50,7 +50,7 @@ export const authMiddleware: RequestHandler = async (request, response, next) =>
         // Check token blacklist
         const blacklistedToken = await prisma.tokenBlacklist.findUnique({ where: { token } })
         if (blacklistedToken) {
-            response.status(401).json({ success: false, message: 'Token revoked' })
+            response.status(401).json({ success: false, message: 'Token used has been revoked! Please sign in first!' })
             return
         }
 
