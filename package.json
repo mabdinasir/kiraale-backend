@@ -9,9 +9,8 @@
     "type": "module",
     "version": "1.0.0",
     "scripts": {
-        "heroku-postbuild": "npm run build",
-        "start": "pm2-runtime start ecosystem.config.mjs",
         "build": "tsc && resolve-tspaths && prisma generate",
+        "start": "pm2-runtime start ecosystem.config.mjs",
         "dev": "nodemon --exec bun run src/main.ts",
         "type-check": "tsc --noEmit --watch",
         "lint": "eslint . --ignore-pattern 'dist'",
