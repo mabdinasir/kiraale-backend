@@ -9,7 +9,7 @@
     "type": "module",
     "version": "1.0.0",
     "scripts": {
-        "start": "pm2-runtime start ecosystem.config.cjs --env production",
+        "start": "pm2-runtime start ecosystem.config.mjs --env production",
         "heroku-postbuild": "npm run build",
         "build": "tsc && resolve-tspaths && prisma generate",
         "dev": "nodemon --exec bun run src/main.ts",
