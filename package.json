@@ -10,7 +10,7 @@
     "version": "1.0.0",
     "scripts": {
         "build": "tsc && resolve-tspaths && prisma generate",
-        "start": "pm2-runtime start ecosystem.config.mjs",
+        "start": "pm2-runtime start ecosystem.config.js --env production",
         "dev": "nodemon --exec bun run src/main.ts",
         "type-check": "tsc --noEmit --watch",
         "lint": "eslint . --ignore-pattern 'dist'",
