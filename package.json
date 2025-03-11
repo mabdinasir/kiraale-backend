@@ -9,7 +9,8 @@
     "type": "module",
     "version": "1.0.0",
     "scripts": {
-        "start": "pm2-runtime start ecosystem.config.js --env production",
+        "start": "pm2-runtime start ecosystem.config.cjs --env production",
+        "heroku-postbuild": "npm run build",
         "build": "tsc && resolve-tspaths && prisma generate",
         "dev": "nodemon --exec bun run src/main.ts",
         "type-check": "tsc --noEmit --watch",
