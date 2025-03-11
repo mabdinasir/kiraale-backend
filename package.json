@@ -9,7 +9,7 @@
     "type": "module",
     "version": "1.0.0",
     "scripts": {
-        "start": "node dist/main.js",
+        "start": "node dist/main.js || heroku restart",
         "build": "tsc && resolve-tspaths && prisma generate",
         "dev": "nodemon --exec bun run src/main.ts",
         "type-check": "tsc --noEmit --watch",
