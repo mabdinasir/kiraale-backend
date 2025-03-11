@@ -9,7 +9,7 @@
     "type": "module",
     "version": "1.0.0",
     "scripts": {
-        "start": "node dist/main.js || heroku restart",
+        "start": "pm2-runtime start ecosystem.config.js --env production",
         "build": "tsc && resolve-tspaths && prisma generate",
         "dev": "nodemon --exec bun run src/main.ts",
         "type-check": "tsc --noEmit --watch",
@@ -51,6 +51,7 @@
         "express": "^4.21.2",
         "jsonwebtoken": "^9.0.2",
         "lodash": "^4.17.21",
+        "pm2": "^5.4.3",
         "tsconfig-paths": "^4.2.0",
         "validator": "^13.12.0",
         "zod": "^3.24.1"
