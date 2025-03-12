@@ -33,10 +33,10 @@ const uploadProperties: RequestHandler = async (request, response) => {
     try {
         // Initialize S3 client
         const s3Client = new S3Client({
-            region: process.env.PROFILE_PIC_BUCKET_REGION,
+            region: process.env.PROPERTIES_BUCKET_REGION,
             credentials: {
-                accessKeyId: process.env.PROFILE_PIC_ACCESS_KEY_ID!,
-                secretAccessKey: process.env.PROFILE_PIC_SECRET_ACCESS_KEY!,
+                accessKeyId: process.env.PROPERTIES_ACCESS_KEY_ID!,
+                secretAccessKey: process.env.PROPERTIES_SECRET_ACCESS_KEY!,
             },
         })
 
@@ -59,7 +59,7 @@ const uploadProperties: RequestHandler = async (request, response) => {
 
             // Create S3 upload command
             const putCommand = new PutObjectCommand({
-                Bucket: process.env.PROFILE_PIC_BUCKET_NAME!,
+                Bucket: process.env.PROPERTIES_BUCKET_NAME!,
                 Key: fileName,
                 ContentType: file.mimetype,
                 ContentLength: file.size,
