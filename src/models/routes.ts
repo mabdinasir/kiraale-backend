@@ -4,7 +4,7 @@ export type RouteConfig = {
     path: string
     method: 'get' | 'post' | 'put' | 'patch' | 'delete'
     middlewares?: RequestHandler[]
-    handler: RequestHandler
+    handler: RequestHandler | RequestHandler[]
 }
 
 export type RouteGroup = {

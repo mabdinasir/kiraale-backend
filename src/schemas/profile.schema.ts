@@ -11,6 +11,7 @@ const profileSchema = z.object({
     nationalIdNumber: z.string().optional(),
     agencyName: z.string().optional(),
     yearsOfExperience: z.number().min(0, 'Experience cannot be a negative number').optional(),
+    profilePicture: z.string().optional(),
 })
 
 export { profileSchema }

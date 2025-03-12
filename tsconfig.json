@@ -28,7 +28,8 @@
             "@utils/*": ["lib/utils/*"],
             "@prisma/*": ["../prisma/*"],
             "@middleware/*": ["middleware/*"],
-            "@schemas/*": ["schemas/*"]
+            "@schemas/*": ["schemas/*"],
+            "@config/*": ["lib/config/*"]
         }
     },
     "exclude": ["node_modules", "eslint.config.js"]

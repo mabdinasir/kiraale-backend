@@ -7,6 +7,7 @@ import mediaRoutes from './media.routes'
 import paymentRoutes from './payment.routes'
 import subscriberRoutes from './subscriber.routes'
 import contactRoutes from './contact.routes'
+import fileUploadsRoutes from './fileUploads'
 
 const registerRouteGroups = (router: Router, groups: RouteGroup[]) => {
     groups.forEach((group) => {
@@ -26,6 +27,7 @@ const configureRoutes = (router: Router) => {
         paymentRoutes,
         subscriberRoutes,
         contactRoutes,
+        fileUploadsRoutes,
     ]
     registerRouteGroups(router, routeGroups)
 }
