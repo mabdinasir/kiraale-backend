@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { prisma } from '@lib/utils/prismaClient'
 import computeSHA256 from '@lib/utils/computeSHA256'
@@ -46,6 +46,22 @@ const uploadProfilePic: RequestHandler = async (request, response) => {
         // Generate unique filename
         const fileName = `${validatedData.checksum}-${Date.now()}`
 
+        // Check if the user already has a profile picture and delete it from S3 if exists
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { profilePicture: true },
+        })
+
+        if (user?.profilePicture) {
+            // Delete the previous profile picture from the S3 bucket
+            const deleteCommand = new DeleteObjectCommand({
+                Bucket: process.env.PROFILE_PIC_BUCKET_NAME!,
+                Key: user.profilePicture.split('/').pop()!, // Extract the file name from the URL
+            })
+
+            await s3Client.send(deleteCommand)
+        }
+
         // Create S3 upload command
         const putCommand = new PutObjectCommand({
             Bucket: process.env.PROFILE_PIC_BUCKET_NAME!,
@@ -73,7 +89,7 @@ const uploadProfilePic: RequestHandler = async (request, response) => {
         // Get permanent URL
         const mediaUrl = signedUrl.split('?')[0]
 
-        // Update user profile
+        // Update user profile with new profile picture URL
         await prisma.user.update({
             where: { id: userId },
             data: { profilePicture: mediaUrl },
