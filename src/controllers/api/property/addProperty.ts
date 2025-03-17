@@ -29,6 +29,7 @@ const addProperty: RequestHandler = async (request, response) => {
                 address: propertyData.address,
                 price: propertyData.price,
                 propertyType: propertyData.propertyType,
+                listingType: propertyData.listingType,
                 userId: request.user.id,
                 features: {
                     create: {

@@ -20,7 +20,7 @@ const getPropertyById: RequestHandler = async (request, response) => {
 
     try {
         const property = await prisma.property.findUnique({
-            where: { id, status: { in: ['AVAILABLE'] } },
+            where: { id },
             include: {
                 features: true,
                 media: true,
