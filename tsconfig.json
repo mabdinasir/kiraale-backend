@@ -8,7 +8,6 @@
         "allowJs": true,
         "strict": true,
         "outDir": "dist",
-        "rootDir": "src",
         "skipLibCheck": true,
         "noEmit": false,
         "resolveJsonModule": true,
