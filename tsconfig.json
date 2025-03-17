@@ -2,18 +2,17 @@
     "compilerOptions": {
         "target": "ESNext",
         "module": "ESNext",
-        "outDir": "dist",
         "moduleDetection": "force",
-        "allowJs": true,
 
-        // Bundler mode
         "moduleResolution": "bundler",
-        "verbatimModuleSyntax": true,
-        "noEmit": false,
-
-        // Best practices
+        "allowJs": true,
         "strict": true,
+        "outDir": "dist",
+        "rootDir": "src",
         "skipLibCheck": true,
+        "noEmit": false,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
         "noFallthroughCasesInSwitch": true,
 
         // Base URL and path mappings
@@ -32,5 +31,5 @@
             "@config/*": ["lib/config/*"]
         }
     },
-    "exclude": ["node_modules", "eslint.config.js"]
+    "exclude": ["node_modules", "dist", "eslint.config.js"]
 }
