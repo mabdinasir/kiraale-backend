@@ -31,5 +31,5 @@
             "@config/*": ["lib/config/*"]
         }
     },
-    "exclude": ["node_modules", "eslint.config.js", "dist"]
+    "exclude": ["node_modules", "eslint.config.js"]
 }
