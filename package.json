@@ -9,6 +9,7 @@
     "type": "module",
     "version": "1.0.0",
     "scripts": {
+        "heroku-postbuild": "npm run build",
         "build": "tsc && resolve-tspaths && prisma generate",
         "start": "node dist/main.js",
         "dev": "nodemon --exec bun run src/main.ts",
