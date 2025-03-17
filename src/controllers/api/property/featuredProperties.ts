@@ -14,14 +14,7 @@ const getFeaturedProperties: RequestHandler = async (_request, response) => {
             include: {
                 features: true,
                 media: true,
-                user: {
-                    select: {
-                        firstName: true,
-                        lastName: true,
-                        mobile: true,
-                        email: true,
-                    },
-                },
+                user: { select: { firstName: true, lastName: true, mobile: true, email: true } },
             },
         })
 

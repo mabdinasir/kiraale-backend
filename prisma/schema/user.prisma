@@ -26,6 +26,8 @@ model User {
     // Identity fields
     nationalIdNumber         String?  
     passportNumber           String?  
+
+    FavoriteProperties FavoriteProperties[]
 }
 
 enum Role {

@@ -1,0 +1,12 @@
+model FavoriteProperties {
+    id         String   @id @default(uuid())
+    userId     String
+    propertyId String
+    createdAt  DateTime @default(now())
+
+    user       User     @relation(fields: [userId], references: [id])
+    property   Property @relation(fields: [propertyId], references: [id])
+
+    @@unique([userId, propertyId])
+    @@index([propertyId])
+}

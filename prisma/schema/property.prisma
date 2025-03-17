@@ -17,6 +17,8 @@ model Property {
     features        Features?   @relation
     userId          String
     user            User        @relation(fields: [userId], references: [id])
+
+    FavoriteProperties FavoriteProperties[]
 }
 
 model Features {

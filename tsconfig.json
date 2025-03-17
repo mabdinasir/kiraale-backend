@@ -9,7 +9,6 @@
         // Bundler mode
         "moduleResolution": "bundler",
         "verbatimModuleSyntax": true,
-        "noEmit": true,
 
         // Best practices
         "strict": true,
@@ -32,5 +31,5 @@
             "@config/*": ["lib/config/*"]
         }
     },
-    "exclude": ["node_modules", "eslint.config.js"]
+    "exclude": ["node_modules", "eslint.config.js", "dist"]
 }
