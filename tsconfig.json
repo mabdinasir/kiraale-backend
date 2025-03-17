@@ -2,13 +2,14 @@
     "compilerOptions": {
         "target": "ESNext",
         "module": "ESNext",
-        "outDir": "./dist",
+        "outDir": "dist",
         "moduleDetection": "force",
         "allowJs": true,
 
         // Bundler mode
         "moduleResolution": "bundler",
         "verbatimModuleSyntax": true,
+        "noEmit": true,
 
         // Best practices
         "strict": true,
@@ -31,5 +32,5 @@
             "@config/*": ["lib/config/*"]
         }
     },
-    "exclude": ["node_modules", "eslint.config.js", "dist"]
+    "exclude": ["node_modules", "eslint.config.js"]
 }
