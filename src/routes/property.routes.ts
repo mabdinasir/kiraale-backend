@@ -6,7 +6,7 @@ import type { RouteGroup } from '@models/routes'
 import { authMiddleware } from '@middleware/authMiddleware'
 import getMyProperties from '@controllers/api/property/getMyProperties'
 import toggleFavoriteProperty from '@controllers/api/property/toggleFavoriteProperty'
-import getFavorites from '@controllers/api/property/favoriteProperties'
+import getFavoriteProperties from '@controllers/api/property/getFavoriteProperties'
 
 const propertyRoutes: RouteGroup = {
     basePath: '/properties',
@@ -46,10 +46,10 @@ const propertyRoutes: RouteGroup = {
         },
 
         {
-            path: '/favoriteProperties',
+            path: '/getFavoriteProperties',
             method: 'get',
             middlewares: [authMiddleware],
-            handler: getFavorites,
+            handler: getFavoriteProperties,
         },
     ],
 }

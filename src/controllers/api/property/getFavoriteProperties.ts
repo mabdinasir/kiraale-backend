@@ -27,7 +27,7 @@ const getFavorites: RequestHandler = async (request, response) => {
 
         response.status(200).json({
             success: true,
-            favorites: properties,
+            properties,
         })
     } catch (error) {
         response.status(500).json({
