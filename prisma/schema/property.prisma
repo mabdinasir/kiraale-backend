@@ -1,3 +1,4 @@
+
 model Property {
     id              String      @id @default(uuid())
     title           String
@@ -6,7 +7,6 @@ model Property {
     price           Float       
     createdAt       DateTime    @default(now())
     updatedAt       DateTime    @updatedAt
-    isActive        Boolean     @default(false)  
     listingType     ListingType @default(SALE)
     status          PropertyStatus @default(PENDING)
     approvedAt      DateTime?
@@ -63,7 +63,9 @@ enum ListingType {
 
 enum PropertyStatus {
     PENDING  
-    APPROVED 
     REJECTED 
     EXPIRED  
+    AVAILABLE
+    LEASED
+    SOLD
 }
