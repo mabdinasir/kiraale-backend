@@ -22,47 +22,47 @@ const toggleFavoriteProperty: RequestHandler = async (request, response) => {
 
         if (!property) {
             response.status(404).json({ success: false, message: 'Property not found' })
-            // return
+            return
         }
 
         // Check if the property is already favorited by the user
-        // const existingFavorite = await prisma.favoriteProperties.findUnique({
-        //     where: {
-        //         // eslint-disable-next-line camelcase
-        //         userId_propertyId: {
-        //             userId: request?.user.id,
-        //             propertyId,
-        //         },
-        //     },
-        // })
+        const existingFavorite = await prisma.favoriteProperties.findUnique({
+            where: {
+                // eslint-disable-next-line camelcase
+                userId_propertyId: {
+                    userId: request?.user.id,
+                    propertyId,
+                },
+            },
+        })
 
-        // if (existingFavorite) {
-        //     // Unfavorite the property
-        //     await prisma.favoriteProperties.delete({
-        //         where: { id: existingFavorite.id },
-        //     })
+        if (existingFavorite) {
+            // Unfavorite the property
+            await prisma.favoriteProperties.delete({
+                where: { id: existingFavorite.id },
+            })
 
-        //     response.status(200).json({
-        //         success: true,
-        //         message: 'Property unfavorited successfully',
-        //         favorited: false,
-        //     })
-        // } else {
-        //     // Favorite the property
-        //     const newFavorite = await prisma.favoriteProperties.create({
-        //         data: {
-        //             userId: request.user.id,
-        //             propertyId,
-        //         },
-        //     })
+            response.status(200).json({
+                success: true,
+                message: 'Property unfavorited successfully',
+                favorited: false,
+            })
+        } else {
+            // Favorite the property
+            const newFavorite = await prisma.favoriteProperties.create({
+                data: {
+                    userId: request.user.id,
+                    propertyId,
+                },
+            })
 
-        //     response.status(201).json({
-        //         success: true,
-        //         message: 'Property favorited successfully',
-        //         favorited: true,
-        //         favorite: newFavorite,
-        //     })
-        // }
+            response.status(201).json({
+                success: true,
+                message: 'Property favorited successfully',
+                favorited: true,
+                favorite: newFavorite,
+            })
+        }
     } catch (error) {
         response.status(500).json({
             success: false,
