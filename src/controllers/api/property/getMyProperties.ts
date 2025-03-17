@@ -1,17 +1,17 @@
-import type { RequestHandler } from 'express'
 import { prisma } from '@lib/utils/prismaClient'
+import type { RequestHandler } from 'express'
 
-const getFeaturedProperties: RequestHandler = async (_request, response) => {
+const getMyProperties: RequestHandler = async (request, response) => {
+    const userId = request.user?.id
+    if (!userId) {
+        response.status(401).json({ success: false, message: 'Unauthorized, please sign in first!' })
+        return
+    }
+
     try {
-        const properties = await prisma.property.findMany({
-            take: 6,
+        const myProperties = await prisma.property.findMany({
             where: {
-                status: {
-                    notIn: ['PENDING', 'REJECTED', 'EXPIRED', 'SOLD', 'LEASED'],
-                },
-            },
-            orderBy: {
-                createdAt: 'desc',
+                userId,
             },
             include: {
                 features: true,
@@ -27,9 +27,14 @@ const getFeaturedProperties: RequestHandler = async (_request, response) => {
             },
         })
 
+        if (myProperties.length === 0) {
+            response.status(404).json({ success: false, message: 'You do not have any properties listed.' })
+            return
+        }
+
         response.status(200).json({
             success: true,
-            properties,
+            myProperties,
         })
     } catch (error) {
         response.status(500).json({
@@ -39,4 +44,4 @@ const getFeaturedProperties: RequestHandler = async (_request, response) => {
     }
 }
 
-export default getFeaturedProperties
+export default getMyProperties

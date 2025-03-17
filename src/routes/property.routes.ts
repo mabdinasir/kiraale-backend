@@ -4,7 +4,7 @@ import getPropertyById from '@controllers/api/property/getPropertyById'
 import searchProperties from '@controllers/api/property/searchProperties'
 import type { RouteGroup } from '@models/routes'
 import { authMiddleware } from '@middleware/authMiddleware'
-import getPropertiesByUser from '@controllers/api/property/getPropertiesByUser'
+import getMyProperties from '@controllers/api/property/getMyProperties'
 
 const propertyRoutes: RouteGroup = {
     basePath: '/properties',
@@ -26,15 +26,15 @@ const propertyRoutes: RouteGroup = {
             handler: getPropertyById,
         },
         {
-            path: '/featuredProperties',
+            path: '/getFeaturedProperties',
             method: 'get',
             handler: getFeaturedProperties,
         },
         {
-            path: '/getPropertiesByUser/:userId',
+            path: '/getMyProperties',
             method: 'get',
             middlewares: [authMiddleware],
-            handler: getPropertiesByUser,
+            handler: getMyProperties,
         },
     ],
 }

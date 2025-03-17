@@ -9,7 +9,7 @@
         // Bundler mode
         "moduleResolution": "bundler",
         "verbatimModuleSyntax": true,
-        "noEmit": false,
+        "noEmit": true,
 
         // Best practices
         "strict": true,
