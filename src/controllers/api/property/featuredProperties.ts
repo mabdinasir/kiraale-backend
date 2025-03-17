@@ -6,9 +6,7 @@ const getFeaturedProperties: RequestHandler = async (_request, response) => {
         const properties = await prisma.property.findMany({
             take: 6,
             where: {
-                status: {
-                    notIn: ['PENDING', 'REJECTED', 'EXPIRED', 'SOLD', 'LEASED'],
-                },
+                status: { in: ['AVAILABLE'] },
             },
             orderBy: {
                 createdAt: 'desc',

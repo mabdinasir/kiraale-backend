@@ -9,7 +9,7 @@ const getMyProperties: RequestHandler = async (request, response) => {
     }
 
     try {
-        const myProperties = await prisma.property.findMany({
+        const properties = await prisma.property.findMany({
             where: {
                 userId,
             },
@@ -27,14 +27,14 @@ const getMyProperties: RequestHandler = async (request, response) => {
             },
         })
 
-        if (myProperties.length === 0) {
+        if (properties.length === 0) {
             response.status(404).json({ success: false, message: 'You do not have any properties listed.' })
             return
         }
 
         response.status(200).json({
             success: true,
-            myProperties,
+            properties,
         })
     } catch (error) {
         response.status(500).json({

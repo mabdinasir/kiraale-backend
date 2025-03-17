@@ -41,6 +41,7 @@ const searchProperties: RequestHandler = async (request, response) => {
                 AND (${maxPrice}::NUMERIC IS NULL OR p.price <= ${maxPrice}::NUMERIC)
                 AND (${propertyType}::TEXT IS NULL OR p."propertyType" = ${propertyType}::"PropertyType")
                 AND (${listingType}::TEXT IS NULL OR p."listingType" = ${listingType}::"ListingType")
+                AND p.status = 'AVAILABLE'
             GROUP BY p.id, f.id, u.id
             ORDER BY GREATEST(
                 similarity(p.title, COALESCE(${query}, '')), 
