@@ -7,7 +7,15 @@ const paramsSchema = z.object({
 })
 
 const getPropertiesByUser: RequestHandler = async (request, response) => {
-    const { userId } = request.params
+    const userId = request.user?.id || null
+
+    if (!userId) {
+        response.status(401).json({
+            success: false,
+            message: 'Unauthorized. User not authenticated!',
+        })
+        return
+    }
 
     // Validate the userId parameter
     const validationResult = paramsSchema.safeParse({ userId })
