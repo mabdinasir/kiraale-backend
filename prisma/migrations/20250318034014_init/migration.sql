@@ -1,6 +1,9 @@
 -- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
+
 -- CreateEnum
 CREATE TYPE "MediaType" AS ENUM ('IMAGE', 'VIDEO');
 
@@ -11,7 +14,7 @@ CREATE TYPE "PropertyType" AS ENUM ('RESIDENTIAL', 'COMMERCIAL', 'LAND');
 CREATE TYPE "ListingType" AS ENUM ('SALE', 'RENT');
 
 -- CreateEnum
-CREATE TYPE "PropertyStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'EXPIRED');
+CREATE TYPE "PropertyStatus" AS ENUM ('PENDING', 'REJECTED', 'EXPIRED', 'AVAILABLE', 'LEASED', 'SOLD');
 
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('USER', 'MODERATOR', 'AGENT');
@@ -30,6 +33,17 @@ CREATE TABLE "Contact" (
 );
 
 -- CreateTable
+CREATE TABLE "FavoriteProperties" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "propertyId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "FavoriteProperties_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Property" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -38,7 +52,6 @@ CREATE TABLE "Property" (
     "price" DOUBLE PRECISION NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT false,
     "listingType" "ListingType" NOT NULL DEFAULT 'SALE',
     "status" "PropertyStatus" NOT NULL DEFAULT 'PENDING',
     "approvedAt" TIMESTAMP(3),
@@ -46,6 +59,7 @@ CREATE TABLE "Property" (
     "approvedBy" TEXT,
     "propertyType" "PropertyType" NOT NULL,
     "userId" TEXT NOT NULL,
+    "isFavorited" BOOLEAN DEFAULT false,
 
     CONSTRAINT "Property_pkey" PRIMARY KEY ("id")
 );
@@ -124,6 +138,15 @@ CREATE TABLE "User" (
 );
 
 -- CreateIndex
+CREATE INDEX "FavoriteProperties_propertyId_idx" ON "FavoriteProperties"("propertyId");
+
+-- CreateIndex
+CREATE INDEX "FavoriteProperties_userId_idx" ON "FavoriteProperties"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "FavoriteProperties_userId_propertyId_key" ON "FavoriteProperties"("userId", "propertyId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Features_propertyId_key" ON "Features"("propertyId");
 
 -- CreateIndex
@@ -134,6 +157,12 @@ CREATE UNIQUE INDEX "User_mobile_key" ON "User"("mobile");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- AddForeignKey
+ALTER TABLE "FavoriteProperties" ADD CONSTRAINT "FavoriteProperties_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FavoriteProperties" ADD CONSTRAINT "FavoriteProperties_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Property" ADD CONSTRAINT "Property_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
