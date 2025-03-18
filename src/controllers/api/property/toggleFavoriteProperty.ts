@@ -42,14 +42,6 @@ const toggleFavoriteProperty: RequestHandler = async (request, response) => {
                 where: { id: existingFavorite.id },
             })
 
-            // Set isFavorited to false on the property
-            await prisma.property.update({
-                where: { id: propertyId },
-                data: {
-                    isFavorited: false,
-                },
-            })
-
             response.status(200).json({
                 success: true,
                 message: 'Property unfavorited successfully',
@@ -61,14 +53,6 @@ const toggleFavoriteProperty: RequestHandler = async (request, response) => {
                 data: {
                     userId: request.user.id,
                     propertyId,
-                },
-            })
-
-            // Set isFavorited to true on the property
-            await prisma.property.update({
-                where: { id: propertyId },
-                data: {
-                    isFavorited: true,
                 },
             })
 

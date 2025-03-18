@@ -59,7 +59,6 @@ CREATE TABLE "Property" (
     "approvedBy" TEXT,
     "propertyType" "PropertyType" NOT NULL,
     "userId" TEXT NOT NULL,
-    "isFavorited" BOOLEAN DEFAULT false,
 
     CONSTRAINT "Property_pkey" PRIMARY KEY ("id")
 );

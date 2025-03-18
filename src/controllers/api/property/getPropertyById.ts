@@ -19,6 +19,8 @@ const getPropertyById: RequestHandler = async (request, response) => {
     }
 
     try {
+        const userId = request.user?.id || null // Get the logged-in user's ID, or null if not logged in
+
         const property = await prisma.property.findUnique({
             where: { id },
             include: {
@@ -32,11 +34,33 @@ const getPropertyById: RequestHandler = async (request, response) => {
             response.status(404).json({ success: false, message: 'Property not found.' })
             return
         }
-        response.status(200).json({ success: true, property })
+
+        // Check if the property is favorited by the logged-in user
+        let isFavorited = false
+        if (userId) {
+            const favorite = await prisma.favoriteProperties.findUnique({
+                where: {
+                    // eslint-disable-next-line camelcase
+                    userId_propertyId: {
+                        userId,
+                        propertyId: id,
+                    },
+                },
+            })
+            isFavorited = Boolean(favorite)
+        }
+
+        // Add the isFavorited field to the property object
+        const propertyWithFavoritedStatus = {
+            ...property,
+            isFavorited,
+        }
+
+        response.status(200).json({ success: true, property: propertyWithFavoritedStatus })
     } catch (error) {
         response.status(500).json({
             success: false,
-            message: `Internal error occured: ${(error as Error).message}`,
+            message: `Internal error occurred: ${(error as Error).message}`,
         })
     }
 }

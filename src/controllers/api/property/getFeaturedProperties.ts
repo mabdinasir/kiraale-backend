@@ -1,41 +1,25 @@
-import { prisma } from '@lib/utils/prismaClient'
 import type { RequestHandler } from 'express'
-import { z } from 'zod'
+import { prisma } from '@lib/utils/prismaClient'
 
-const paramsSchema = z.object({
-    userId: z.string().uuid(),
-})
-
-const getPropertiesByUser: RequestHandler = async (request, response) => {
-    const { userId } = request.params
-
-    // Validate the userId parameter
-    const validationResult = paramsSchema.safeParse({ userId })
-    if (!validationResult.success) {
-        response.status(400).json({
-            success: false,
-            message: 'Invalid user ID.',
-        })
-        return
-    }
-
+const getFeaturedProperties: RequestHandler = async (request, response) => {
     try {
-        const loggedInUserId = request.user?.id || null // Get the logged-in user's ID, or null if not logged in
+        const loggedInUserId = request.user?.id || null
 
-        // Fetch properties by user ID
+        // Fetch featured properties
         const properties = await prisma.property.findMany({
-            where: { userId },
+            take: 6,
+            where: {
+                status: { in: ['AVAILABLE'] },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
             include: {
                 features: true,
                 media: true,
                 user: { select: { firstName: true, lastName: true, mobile: true, email: true } },
             },
         })
-
-        if (properties.length === 0) {
-            response.status(404).json({ success: false, message: 'No properties found for this user.' })
-            return
-        }
 
         // Check if each property is favorited by the logged-in user
         const propertiesWithFavoritedStatus = await Promise.all(
@@ -62,13 +46,16 @@ const getPropertiesByUser: RequestHandler = async (request, response) => {
             }),
         )
 
-        response.status(200).json({ success: true, properties: propertiesWithFavoritedStatus })
+        response.status(200).json({
+            success: true,
+            properties: propertiesWithFavoritedStatus,
+        })
     } catch (error) {
         response.status(500).json({
             success: false,
-            message: `Internal error occurred: ${(error as Error).message}`,
+            message: `Internal server error occurred: ${(error as Error).message}`,
         })
     }
 }
 
-export default getPropertiesByUser
+export default getFeaturedProperties

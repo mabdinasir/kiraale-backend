@@ -13,7 +13,6 @@ model Property {
     approvedBy         String?
     propertyType       PropertyType
     userId             String
-    isFavorited        Boolean?             @default(false)
     favoriteProperties FavoriteProperties[]
     features           Features?
     media              Media[]

@@ -18,6 +18,8 @@ const searchProperties: RequestHandler = async (request, response) => {
     const { query, minPrice, maxPrice, propertyType, listingType } = result.data
 
     try {
+        const userId = request.user?.id || null
+
         const properties = await prisma.$queryRaw`
             SELECT 
                 p.*,
@@ -28,7 +30,13 @@ const searchProperties: RequestHandler = async (request, response) => {
                     'mobile', u."mobile",
                     'email', u.email
                 ) AS user, 
-                COALESCE(json_agg(m) FILTER (WHERE m.id IS NOT NULL), '[]') AS media
+                COALESCE(json_agg(m) FILTER (WHERE m.id IS NOT NULL), '[]') AS media,
+                EXISTS ( -- 👇 Check if the property is favorited by the logged-in user
+                    SELECT 1
+                    FROM "FavoriteProperties" fp
+                    WHERE fp."propertyId" = p.id
+                    AND fp."userId" = ${userId}
+                ) AS "isFavorited"
             FROM "Property" p
             LEFT JOIN "Features" f ON p.id = f."propertyId"
             LEFT JOIN "Media" m ON p.id = m."propertyId"
