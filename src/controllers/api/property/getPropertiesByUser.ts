@@ -40,11 +40,6 @@ const getPropertiesByUser: RequestHandler = async (request, response) => {
             },
         })
 
-        if (properties.length === 0) {
-            response.status(404).json({ success: false, message: 'No properties found for this user.' })
-            return
-        }
-
         // Check if each property is favorited by the logged-in user
         const propertiesWithFavoritedStatus = await Promise.all(
             properties.map(async (property) => {

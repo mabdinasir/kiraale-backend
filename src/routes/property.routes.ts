@@ -33,7 +33,7 @@ const propertyRoutes: RouteGroup = {
             handler: getFeaturedProperties,
         },
         {
-            path: '/getPropertiesByUser/:userId',
+            path: '/getPropertiesByUser',
             method: 'get',
             middlewares: [authMiddleware],
             handler: getPropertiesByUser,
