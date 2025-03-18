@@ -39,7 +39,7 @@ const propertyRoutes: RouteGroup = {
             handler: getMyProperties,
         },
         {
-            path: '/toggleFavoriteProperty',
+            path: '/toggleFavoriteProperty/:propertyId',
             method: 'post',
             middlewares: [authMiddleware],
             handler: toggleFavoriteProperty,

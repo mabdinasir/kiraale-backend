@@ -1,50 +1,49 @@
-
 model Property {
-    id              String      @id @default(uuid())
-    title           String
-    description     String?     
-    address         String      
-    price           Float       
-    createdAt       DateTime    @default(now())
-    updatedAt       DateTime    @updatedAt
-    listingType     ListingType @default(SALE)
-    status          PropertyStatus @default(PENDING)
-    approvedAt      DateTime?
-    expiresAt       DateTime?  
-    approvedBy      String?
-    propertyType    PropertyType 
-    media           Media[]     
-    features        Features?   @relation
-    userId          String
-    user            User        @relation(fields: [userId], references: [id])
-
+    id                 String               @id @default(uuid())
+    title              String
+    description        String?
+    address            String
+    price              Float
+    createdAt          DateTime             @default(now())
+    updatedAt          DateTime             @updatedAt
+    listingType        ListingType          @default(SALE)
+    status             PropertyStatus       @default(PENDING)
+    approvedAt         DateTime?
+    expiresAt          DateTime?
+    approvedBy         String?
+    propertyType       PropertyType
+    userId             String
+    isFavorited        Boolean?             @default(false)
     favoriteProperties FavoriteProperties[]
+    features           Features?
+    media              Media[]
+    user               User                 @relation(fields: [userId], references: [id])
 }
 
 model Features {
-    id              String      @id @default(uuid())
-    bedrooms        Int?        
-    bathrooms       Int?        
-    parking         Int?    
-    area            Float?      
-    pool            Boolean?    
-    yearBuilt       Int?    
+    id              String   @id @default(uuid())
+    bedrooms        Int?
+    bathrooms       Int?
+    parking         Int?
+    area            Float?
+    pool            Boolean?
+    yearBuilt       Int?
     furnished       Boolean?
     dishwasher      Boolean?
     airConditioning Boolean?
-    laundry         Boolean? 
-    wardrobe        Boolean? 
-    oven            Boolean?  
-    property        Property    @relation(fields: [propertyId], references: [id])
-    propertyId      String      @unique
+    laundry         Boolean?
+    wardrobe        Boolean?
+    oven            Boolean?
+    propertyId      String   @unique
+    property        Property @relation(fields: [propertyId], references: [id])
 }
 
 model Media {
-    id              String      @id @default(uuid())
-    url             String      
-    type            MediaType   
-    propertyId      String      
-    property        Property    @relation(fields: [propertyId], references: [id])
+    id         String    @id @default(uuid())
+    url        String
+    type       MediaType
+    propertyId String
+    property   Property  @relation(fields: [propertyId], references: [id])
 }
 
 enum MediaType {
@@ -64,9 +63,9 @@ enum ListingType {
 }
 
 enum PropertyStatus {
-    PENDING  
-    REJECTED 
-    EXPIRED  
+    PENDING
+    REJECTED
+    EXPIRED
     AVAILABLE
     LEASED
     SOLD

@@ -1,4 +1,4 @@
 model TokenBlacklist {
-    id              String      @id @default(uuid())
-    token           String      @unique
+  id    String @id @default(uuid())
+  token String @unique
 }

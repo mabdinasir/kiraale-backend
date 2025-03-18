@@ -1,11 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["prismaSchemaFolder", "postgresqlExtensions"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "prismaSchemaFolder"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  extensions = [pg_trgm]
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pg_trgm, uuid_ossp(map: "uuid-ossp", schema: "extensions")]
 }
-
