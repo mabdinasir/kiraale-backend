@@ -17,9 +17,9 @@ const searchProperties: RequestHandler = async (request, response) => {
 
     const { query, minPrice, maxPrice, propertyType, listingType } = result.data
 
-    try {
-        const userId = request.user?.id || null
+    const userId = request.user?.id
 
+    try {
         const properties = await prisma.$queryRaw`
             SELECT 
                 p.*,

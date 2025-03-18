@@ -3,7 +3,7 @@ import { prisma } from '@lib/utils/prismaClient'
 
 const getFeaturedProperties: RequestHandler = async (request, response) => {
     try {
-        const loggedInUserId = request.user?.id || null
+        const userId = request?.user?.id
 
         // Fetch featured properties
         const properties = await prisma.property.findMany({
@@ -21,16 +21,16 @@ const getFeaturedProperties: RequestHandler = async (request, response) => {
             },
         })
 
-        // Check if each property is favorited by the logged-in user
+        // Check if each property is favorited by the logged-in user (if userId is not empty)
         const propertiesWithFavoritedStatus = await Promise.all(
             properties.map(async (property) => {
                 let isFavorited = false
-                if (loggedInUserId) {
+                if (userId) {
                     const favorite = await prisma.favoriteProperties.findUnique({
                         where: {
                             // eslint-disable-next-line camelcase
                             userId_propertyId: {
-                                userId: loggedInUserId,
+                                userId,
                                 propertyId: property.id,
                             },
                         },

@@ -7,6 +7,7 @@ import { authMiddleware } from '@middleware/authMiddleware'
 import toggleFavoriteProperty from '@controllers/api/property/toggleFavoriteProperty'
 import getFavoriteProperties from '@controllers/api/property/getFavoriteProperties'
 import getPropertiesByUser from '@controllers/api/property/getPropertiesByUser'
+import { tokenExtractionMiddleware } from '@middleware/tokenExtractionMiddleware'
 
 const propertyRoutes: RouteGroup = {
     basePath: '/properties',
@@ -20,16 +21,19 @@ const propertyRoutes: RouteGroup = {
         {
             path: '/searchProperties',
             method: 'get',
+            middlewares: [tokenExtractionMiddleware],
             handler: searchProperties,
         },
         {
             path: '/getPropertyById/:id',
             method: 'get',
+            middlewares: [tokenExtractionMiddleware],
             handler: getPropertyById,
         },
         {
             path: '/getFeaturedProperties',
             method: 'get',
+            middlewares: [tokenExtractionMiddleware],
             handler: getFeaturedProperties,
         },
         {

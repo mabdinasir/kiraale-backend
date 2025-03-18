@@ -1,7 +1,7 @@
 import type { RequestHandler } from 'express'
 import { prisma } from '@lib/utils/prismaClient'
 
-const getFavorites: RequestHandler = async (request, response) => {
+const getFavoriteProperties: RequestHandler = async (request, response) => {
     try {
         if (!request.user || !request.user.id) {
             response.status(401).json({ success: false, message: 'Unauthorized: User not found in context' })
@@ -22,8 +22,11 @@ const getFavorites: RequestHandler = async (request, response) => {
             },
         })
 
-        // Extract properties from favorites
-        const properties = favorites.map((fav) => fav.property)
+        // Extract properties from favorites and add isFavorited field
+        const properties = favorites.map((fav) => ({
+            ...fav.property,
+            isFavorited: true, // Since these are favorites, isFavorited is always true
+        }))
 
         response.status(200).json({
             success: true,
@@ -37,4 +40,4 @@ const getFavorites: RequestHandler = async (request, response) => {
     }
 }
 
-export default getFavorites
+export default getFavoriteProperties
