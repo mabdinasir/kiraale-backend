@@ -68,3 +68,12 @@ jobs:
             - name: Push Docker image to ECR
               run: |
                   docker push ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:latest
+
+            - name: Update ECS Service
+              run: |
+                  ecs_task_definition=$(aws ecs describe-task-definition --task-definition ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_TASK_DEFINITION }} --query "taskDefinition.revision" --output text)
+                  aws ecs update-service \
+                    --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
+                    --service ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }} \
+                    --force-new-deployment \
+                    --task-definition $ecs_task_definition
