@@ -9,7 +9,7 @@ COPY package.json ./
 COPY package-lock.json ./
 
 # Install dependencies using npm
-RUN npm install --omit=dev
+RUN npm install
 
 # Install PM2 globally
 RUN npm install -g pm2
