@@ -10,8 +10,8 @@
     "version": "1.0.0",
     "scripts": {
         "build": "tsc && resolve-tspaths && prisma generate",
-        "start": "node dist/main.js",
-        "dev": "nodemon --exec bun run src/main.ts",
+        "start": "pm2 start dist/main.js --name eastleigh-real-estate",
+        "dev": "pm2 start bun --name eastleigh-real-estate-dev -- run src/main.ts --watch",
         "type-check": "tsc --noEmit --watch",
         "lint": "eslint . --ignore-pattern 'dist'",
         "lint:fix": "eslint . --fix --ignore-pattern 'dist'",
@@ -55,6 +55,7 @@
         "jsonwebtoken": "^9.0.2",
         "lodash": "^4.17.21",
         "multer": "^1.4.5-lts.1",
+        "pm2": "^6.0.5",
         "tsconfig-paths": "^4.2.0",
         "validator": "^13.12.0",
         "zod": "^3.24.1"
