@@ -1,4 +1,4 @@
-import type { User } from '@prisma/client'
+import { User } from '@prisma/client'
 
 export interface JwtPayload extends Omit<User, 'password'> {
     iat?: number

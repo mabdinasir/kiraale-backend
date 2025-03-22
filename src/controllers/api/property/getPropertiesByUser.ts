@@ -1,4 +1,5 @@
 import { prisma } from '@lib/utils/prismaClient'
+import { Property } from '@prisma/client'
 import type { RequestHandler } from 'express'
 import { z } from 'zod'
 
@@ -42,7 +43,7 @@ const getPropertiesByUser: RequestHandler = async (request, response) => {
 
         // Check if each property is favorited by the logged-in user
         const propertiesWithFavoritedStatus = await Promise.all(
-            properties.map(async (property) => {
+            properties.map(async (property: Property) => {
                 let isFavorited = false
                 if (loggedInUserId) {
                     const favorite = await prisma.favoriteProperties.findUnique({

@@ -1,4 +1,4 @@
-import type { User } from '@prisma/client'
+import { User } from '@prisma/client'
 import lodash from 'lodash'
 
 export const omitPassword = (user: User) => {

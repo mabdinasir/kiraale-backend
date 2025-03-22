@@ -1,5 +1,6 @@
 import type { RequestHandler } from 'express'
 import { prisma } from '@lib/utils/prismaClient'
+import { Property, FavoriteProperties } from '@prisma/client'
 
 const getFeaturedProperties: RequestHandler = async (request, response) => {
     try {
@@ -23,10 +24,10 @@ const getFeaturedProperties: RequestHandler = async (request, response) => {
 
         // Check if each property is favorited by the logged-in user (if userId is not empty)
         const propertiesWithFavoritedStatus = await Promise.all(
-            properties.map(async (property) => {
+            properties.map(async (property: Property) => {
                 let isFavorited = false
                 if (userId) {
-                    const favorite = await prisma.favoriteProperties.findUnique({
+                    const favoriteProperty: FavoriteProperties | null = await prisma.favoriteProperties.findUnique({
                         where: {
                             // eslint-disable-next-line camelcase
                             userId_propertyId: {
@@ -35,7 +36,7 @@ const getFeaturedProperties: RequestHandler = async (request, response) => {
                             },
                         },
                     })
-                    isFavorited = Boolean(favorite)
+                    isFavorited = Boolean(favoriteProperty)
                 }
 
                 // Add the isFavorited field to the property object
