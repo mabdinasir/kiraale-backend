@@ -53,6 +53,8 @@ jobs:
 
             - name: Log in to AWS ECR
               uses: aws-actions/amazon-ecr-login@v1
+              with:
+                  region: ap-southeast-2
 
             - name: Set up AWS CLI
               uses: aws-actions/configure-aws-credentials@v1
