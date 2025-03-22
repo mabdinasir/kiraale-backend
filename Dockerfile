@@ -14,10 +14,16 @@ RUN npm install
 # Install PM2 globally
 RUN npm install -g pm2
 
+# Install Prisma CLI globally
+RUN npm install -g prisma
+
+# Generate Prisma Client (important step)
+RUN npx prisma generate
+
 # Copy the rest of the application files
 COPY . .
 
-# Build the TypeScript project using npm
+# Build the TypeScript project
 RUN npm run build
 
 # Expose the application port
