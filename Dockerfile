@@ -4,20 +4,17 @@ FROM node:lts-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json ./
-COPY package-lock.json ./
+# Copy package files and Prisma schema
+COPY package.json package-lock.json ./
+COPY prisma ./prisma/
 
-# Install dependencies using npm
+# Install dependencies (includes Prisma CLI from devDependencies)
 RUN npm install
 
 # Install PM2 globally
 RUN npm install -g pm2
 
-# Install Prisma CLI globally
-RUN npm install -g prisma
-
-# Generate Prisma Client (important step)
+# Generate Prisma Client (schema is now available)
 RUN npx prisma generate
 
 # Copy the rest of the application files
