@@ -85,6 +85,7 @@ jobs:
 
                   # Add environment variables (JWT_SECRET, DATABASE_URL, etc.)
                   echo "$(jq '.containerDefinitions[0].environment += [
+                      {"name": "PORT", "value": "'${{ secrets.PORT }}'"},
                       {"name": "JWT_SECRET", "value": "'${{ secrets.JWT_SECRET }}'"},
                       {"name": "DATABASE_URL", "value": "'${{ secrets.DATABASE_URL }}'"}
                     ]' new-task-def.json)" > new-task-def.json
