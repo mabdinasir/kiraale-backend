@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 app.use(cookieParser())
 
 app.get('/', (req, res) => {
-    res.send('Hello World - Docker - CI Auto Deploy - ECS!')
+    res.send('Testing new auto deployment')
 })
 
 const router = express.Router()

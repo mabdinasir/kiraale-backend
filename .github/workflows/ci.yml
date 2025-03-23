@@ -40,9 +40,9 @@ jobs:
             - name: Run Prettier
               run: bun run fmt:check
 
-    build-and-push:
+    build-and-deploy:
         runs-on: ubuntu-latest
-        needs: lint-and-format # Make sure linting and formatting are done first
+        needs: lint-and-format # Ensure linting and formatting complete first
 
         steps:
             - name: Checkout code
@@ -61,26 +61,50 @@ jobs:
             - name: Log in to AWS ECR
               uses: aws-actions/amazon-ecr-login@v2
 
-            - name: Build Docker image
+            - name: Build and Push Docker Image
               run: |
-                  docker build -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:latest .
+                  IMAGE_TAG=$(date +%s)  # Generate a unique timestamp-based tag
+                  echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+                  docker build -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:$IMAGE_TAG .
+                  docker push ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:$IMAGE_TAG
 
-            - name: Push Docker image to ECR
+            - name: Get Current Task Definition
               run: |
-                  docker push ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:latest
+                  # Fetch the current task definition ARN
+                  CURRENT_TASK_DEF=$(aws ecs describe-services \
+                    --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
+                    --services ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }} \
+                    --query "services[0].taskDefinition" --output text)
+
+                  echo "CURRENT_TASK_DEF=$CURRENT_TASK_DEF" >> $GITHUB_ENV
+
+            - name: Register New ECS Task Definition
+              run: |
+                  # Get current task definition JSON and remove unwanted fields
+                  TASK_DEFINITION_JSON=$(aws ecs describe-task-definition --task-definition ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_TASK_DEFINITION }} --query taskDefinition | jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+
+                  # Update the image in the task definition
+                  UPDATED_TASK_DEF=$(echo "$TASK_DEFINITION_JSON" | jq --arg IMAGE "${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:$IMAGE_TAG" '.containerDefinitions[0].image = $IMAGE')
+
+                  # Register the updated task definition and capture the new ARN
+                  NEW_TASK_REVISION=$(aws ecs register-task-definition --cli-input-json "$UPDATED_TASK_DEF" --query "taskDefinition.taskDefinitionArn" --output text)
+                  echo "NEW_TASK_REVISION=$NEW_TASK_REVISION" >> $GITHUB_ENV
 
             - name: Update ECS Service
               run: |
                   aws ecs update-service \
                     --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
                     --service ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }} \
+                    --task-definition $NEW_TASK_REVISION \
                     --force-new-deployment
 
-            - name: Rollback ECS Service (if update fails)
+            - name: Rollback on Failure
               if: failure()
               run: |
+                  echo "Deployment failed! Rolling back to previous task definition: $CURRENT_TASK_DEF"
+
                   aws ecs update-service \
                     --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
                     --service ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }} \
-                    --task-definition <PREVIOUS_TASK_DEFINITION_ARN> \
+                    --task-definition $CURRENT_TASK_DEF \
                     --force-new-deployment
