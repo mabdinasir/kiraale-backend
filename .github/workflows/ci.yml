@@ -82,6 +82,9 @@ jobs:
                   # Update the image URI in the task definition
                   echo "$TASK_DEFINITION_JSON" | jq --arg IMAGE_URI "${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:$IMAGE_TAG" '.containerDefinitions[0].image = $IMAGE_URI' > new-task-def.json
 
+                  # Add JWT_SECRET environment variable to the task definition
+                  echo "$(jq '.containerDefinitions[0].environment += [{"name": "JWT_SECRET", "value": "'${{ secrets.JWT_SECRET }}'"}]' new-task-def.json)" > new-task-def.json
+
                   # Register the new task definition
                   NEW_TASK_REVISION=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json --query "taskDefinition.taskDefinitionArn" --output text)
 
