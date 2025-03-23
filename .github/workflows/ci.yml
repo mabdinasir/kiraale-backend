@@ -75,3 +75,12 @@ jobs:
                     --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
                     --service ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }} \
                     --force-new-deployment
+
+            - name: Rollback ECS Service (if update fails)
+              if: failure()
+              run: |
+                  aws ecs update-service \
+                    --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
+                    --service ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }} \
+                    --task-definition <PREVIOUS_TASK_DEFINITION_ARN> \
+                    --force-new-deployment
