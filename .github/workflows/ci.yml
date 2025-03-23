@@ -63,34 +63,25 @@ jobs:
 
             - name: Build and Push Docker Image
               run: |
-                  IMAGE_TAG=$(date +%s)  # Generate a unique timestamp-based tag
+                  IMAGE_TAG=$(date +%s)  # Generate a unique tag
                   echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
                   docker build -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:$IMAGE_TAG .
                   docker push ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:$IMAGE_TAG
 
-            - name: Get Current Task Definition
+            - name: Update ECS Task Definition
               run: |
-                  # Fetch the current task definition ARN
-                  CURRENT_TASK_DEF=$(aws ecs describe-services \
-                    --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
-                    --services ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }} \
-                    --query "services[0].taskDefinition" --output text)
+                  # Fetch the current task definition
+                  TASK_DEFINITION_JSON=$(aws ecs describe-task-definition --task-definition ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_TASK_DEFINITION }} --query taskDefinition | jq 'del(.status, .taskDefinitionArn, .revision, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
 
-                  echo "CURRENT_TASK_DEF=$CURRENT_TASK_DEF" >> $GITHUB_ENV
+                  # Update the image URI in the task definition
+                  echo "$TASK_DEFINITION_JSON" | jq --arg IMAGE_URI "${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:$IMAGE_TAG" '.containerDefinitions[0].image = $IMAGE_URI' > new-task-def.json
 
-            - name: Register New ECS Task Definition
-              run: |
-                  # Get current task definition JSON and remove unwanted fields
-                  TASK_DEFINITION_JSON=$(aws ecs describe-task-definition --task-definition ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_TASK_DEFINITION }} --query taskDefinition | jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+                  # Register the new task definition
+                  NEW_TASK_REVISION=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json --query "taskDefinition.taskDefinitionArn" --output text)
 
-                  # Update the image in the task definition
-                  UPDATED_TASK_DEF=$(echo "$TASK_DEFINITION_JSON" | jq --arg IMAGE "${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:$IMAGE_TAG" '.containerDefinitions[0].image = $IMAGE')
-
-                  # Register the updated task definition and capture the new ARN
-                  NEW_TASK_REVISION=$(aws ecs register-task-definition --cli-input-json "$UPDATED_TASK_DEF" --query "taskDefinition.taskDefinitionArn" --output text)
                   echo "NEW_TASK_REVISION=$NEW_TASK_REVISION" >> $GITHUB_ENV
 
-            - name: Update ECS Service
+            - name: Deploy to ECS
               run: |
                   aws ecs update-service \
                     --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
@@ -98,13 +89,15 @@ jobs:
                     --task-definition $NEW_TASK_REVISION \
                     --force-new-deployment
 
-            - name: Rollback on Failure
+            - name: Rollback ECS Service (if update fails)
               if: failure()
               run: |
-                  echo "Deployment failed! Rolling back to previous task definition: $CURRENT_TASK_DEF"
+                  # Fetch the previous task definition ARN
+                  PREVIOUS_TASK_REVISION=$(aws ecs describe-task-definition --task-definition ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_TASK_DEFINITION }} --query 'taskDefinition.taskDefinitionArn' --output text)
 
+                  # Rollback to the previous task definition
                   aws ecs update-service \
                     --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
                     --service ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }} \
-                    --task-definition $CURRENT_TASK_DEF \
+                    --task-definition $PREVIOUS_TASK_REVISION \
                     --force-new-deployment
