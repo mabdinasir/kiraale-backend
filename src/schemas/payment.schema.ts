@@ -7,9 +7,11 @@ export const validateKenyanNumber = (phone: string): boolean => {
 }
 
 export const StkPushSchema = z.object({
-    phone: z.string().refine(validateKenyanNumber, {
+    phoneNumber: z.string().refine(validateKenyanNumber, {
         message: 'Invalid Kenyan phone number',
     }),
+    userId: z.string(),
+    propertyId: z.string(),
 })
 
 const CallbackMetadataItemSchema = z.object({
