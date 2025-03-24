@@ -21,6 +21,7 @@ model User {
   passportNumber     String?
   favoriteProperties FavoriteProperties[]
   properties         Property[]
+  payments           Payment[]
 }
 
 enum Role {

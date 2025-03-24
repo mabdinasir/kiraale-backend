@@ -17,6 +17,7 @@ model Property {
     features           Features?
     media              Media[]
     user               User                 @relation(fields: [userId], references: [id])
+    payments           Payment[]
 }
 
 model Features {

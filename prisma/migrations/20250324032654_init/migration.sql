@@ -5,6 +5,12 @@ CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
 
 -- CreateEnum
+CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'COMPLETED', 'FAILED', 'CANCELLED');
+
+-- CreateEnum
+CREATE TYPE "PaymentMethod" AS ENUM ('MPESA', 'EVC');
+
+-- CreateEnum
 CREATE TYPE "MediaType" AS ENUM ('IMAGE', 'VIDEO');
 
 -- CreateEnum
@@ -41,6 +47,24 @@ CREATE TABLE "FavoriteProperties" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "FavoriteProperties_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Payment" (
+    "id" TEXT NOT NULL,
+    "transactionId" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "receiptNumber" TEXT NOT NULL,
+    "transactionDate" TIMESTAMP(3) NOT NULL,
+    "phoneNumber" TEXT NOT NULL,
+    "paymentStatus" "PaymentStatus" NOT NULL,
+    "paymentMethod" "PaymentMethod" NOT NULL,
+    "propertyId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Payment_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -146,6 +170,9 @@ CREATE INDEX "FavoriteProperties_userId_idx" ON "FavoriteProperties"("userId");
 CREATE UNIQUE INDEX "FavoriteProperties_userId_propertyId_key" ON "FavoriteProperties"("userId", "propertyId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Payment_transactionId_key" ON "Payment"("transactionId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Features_propertyId_key" ON "Features"("propertyId");
 
 -- CreateIndex
@@ -162,6 +189,12 @@ ALTER TABLE "FavoriteProperties" ADD CONSTRAINT "FavoriteProperties_propertyId_f
 
 -- AddForeignKey
 ALTER TABLE "FavoriteProperties" ADD CONSTRAINT "FavoriteProperties_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Payment" ADD CONSTRAINT "Payment_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "Property"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Payment" ADD CONSTRAINT "Payment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Property" ADD CONSTRAINT "Property_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

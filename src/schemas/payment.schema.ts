@@ -11,3 +11,24 @@ export const StkPushSchema = z.object({
         message: 'Invalid Kenyan phone number',
     }),
 })
+
+const CallbackMetadataItemSchema = z.object({
+    Name: z.string(),
+    Value: z.union([z.string(), z.number()]),
+})
+
+const CallbackMetadataSchema = z.object({
+    Item: z.array(CallbackMetadataItemSchema),
+})
+
+export const StkPushCallbackSchema = z.object({
+    Body: z.object({
+        stkCallback: z.object({
+            MerchantRequestID: z.string(),
+            CheckoutRequestID: z.string(),
+            ResultCode: z.number(),
+            ResultDesc: z.string(),
+            CallbackMetadata: z.optional(CallbackMetadataSchema),
+        }),
+    }),
+})
