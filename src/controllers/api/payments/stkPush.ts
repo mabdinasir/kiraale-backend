@@ -3,11 +3,13 @@ import { timestamp } from '@utils/timeStamp'
 import type { RequestHandler } from 'express'
 import { StkPushSchema } from '@schemas/index'
 import dotenv from 'dotenv'
+import { formatKenyanNumber } from '@lib/formatKenyanNumber'
+import { mpesaAmount } from '@lib/config'
 
 dotenv.config()
 
 const handleStkPush: RequestHandler = async (request, response) => {
-    const { phone, amount } = request.body
+    const { phone } = request.body
 
     const validationResult = StkPushSchema.safeParse(request.body)
     if (!validationResult.success) {
@@ -21,16 +23,17 @@ const handleStkPush: RequestHandler = async (request, response) => {
     const BUSINESS_SHORT_CODE = process.env.MPESA_BUSINESS_SHORT_CODE as string
 
     const password = Buffer.from(BUSINESS_SHORT_CODE + process.env.MPESA_PASSKEY + timestamp).toString('base64')
+    const formattedPhone = formatKenyanNumber(phone)
 
     const payload = {
         BusinessShortCode: BUSINESS_SHORT_CODE,
         Password: password,
         Timestamp: timestamp,
         TransactionType: 'CustomerPayBillOnline',
-        Amount: amount,
-        PartyA: phone,
+        Amount: mpesaAmount,
+        PartyA: formattedPhone,
         PartyB: process.env.MPESA_BUSINESS_SHORT_CODE,
-        PhoneNumber: phone,
+        PhoneNumber: formattedPhone,
         CallBackURL: 'https://mydomain.com/path',
         AccountReference: 'Eastleigh Real Estate',
         TransactionDesc: 'Payment for Property Listing',
