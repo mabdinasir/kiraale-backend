@@ -72,22 +72,20 @@ const handleStkPush: RequestHandler = async (request, response) => {
             },
         })
 
-        const { CheckoutRequestID } = res.data
+        const { CheckoutRequestID } = await res.data
 
         // Store the transaction in DB with a PENDING status
         await prisma.payment.create({
             data: {
                 transactionId: CheckoutRequestID,
-                userId,
-                propertyId,
                 amount: mpesaAmount,
                 phoneNumber: formattedPhone,
                 paymentStatus: 'PENDING',
                 transactionDate: new Date(),
                 receiptNumber: receiptNumber.toString(),
                 paymentMethod: 'MPESA',
-                property: { connect: { id: propertyId } },
                 user: { connect: { id: userId } },
+                property: { connect: { id: propertyId } },
             },
         })
 
