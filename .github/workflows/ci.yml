@@ -70,18 +70,17 @@ jobs:
             - name: Login to Amazon ECR
               uses: aws-actions/amazon-ecr-login@v2
 
-            # Multi-platform build with caching
+            # Build and push Docker image
             - name: Build and Push Docker Image
               run: |
                   IMAGE_TAG=$(date +%s)
                   echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
                   docker buildx build \
-                    --platform linux/arm64,linux/amd64 \
+                    --platform linux/arm64 \
                     -t $ECR_REPO:$IMAGE_TAG \
                     -t $ECR_REPO:latest \
                     --cache-from type=registry,ref=$ECR_REPO:buildcache \
-                    --cache-to type=registry,ref=$ECR_REPO:buildcache,mode=max \
                     --push .
 
             # Cleanup old images (keep last 3)
