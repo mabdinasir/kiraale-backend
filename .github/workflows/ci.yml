@@ -83,16 +83,16 @@ jobs:
 
                   # Add secrets from AWS Secrets Manager to the task definition
                   echo "$(jq '.containerDefinitions[0].secrets += [
-                    {"name": "PORT", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PORT"},
-                    {"name": "JWT_SECRET", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:JWT_SECRET"},
-                    {"name": "DATABASE_URL", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:DATABASE_URL"},
-                    {"name": "PROFILE_PIC_ACCESS_KEY_ID", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROFILE_PIC_ACCESS_KEY_ID"},
-                    {"name": "PROFILE_PIC_SECRET_ACCESS_KEY", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROFILE_PIC_SECRET_ACCESS_KEY"},
-                    {"name": "PROFILE_PIC_BUCKET_REGION", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROFILE_PIC_BUCKET_REGION"},
-                    {"name": "PROFILE_PIC_BUCKET_NAME", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROFILE_PIC_BUCKET_NAME"},
-                    {"name": "PROPERTIES_ACCESS_KEY_ID", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROPERTIES_ACCESS_KEY_ID"},
-                    {"name": "PROPERTIES_SECRET_ACCESS_KEY", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROPERTIES_SECRET_ACCESS_KEY"},
-                    {"name": "PROPERTIES_BUCKET_REGION", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROPERTIES_BUCKET_REGION"}
+                  {"name": "PORT", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:PORT"},
+                  {"name": "JWT_SECRET", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:JWT_SECRET"},
+                  {"name": "DATABASE_URL", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:DATABASE_URL"},
+                  {"name": "PROFILE_PIC_ACCESS_KEY_ID", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:PROFILE_PIC_ACCESS_KEY_ID"},
+                  {"name": "PROFILE_PIC_SECRET_ACCESS_KEY", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:PROFILE_PIC_SECRET_ACCESS_KEY"},
+                  {"name": "PROFILE_PIC_BUCKET_REGION", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:PROFILE_PIC_BUCKET_REGION"},
+                  {"name": "PROFILE_PIC_BUCKET_NAME", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:PROFILE_PIC_BUCKET_NAME"},
+                  {"name": "PROPERTIES_ACCESS_KEY_ID", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:PROPERTIES_ACCESS_KEY_ID"},
+                  {"name": "PROPERTIES_SECRET_ACCESS_KEY", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:PROPERTIES_SECRET_ACCESS_KEY"},
+                  {"name": "PROPERTIES_BUCKET_REGION", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:PROPERTIES_BUCKET_REGION"}
                   ]' new-task-def.json)" > new-task-def.json
 
                   # Register the new ECS Task Definition
