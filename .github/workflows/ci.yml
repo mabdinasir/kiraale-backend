@@ -66,9 +66,15 @@ jobs:
                   IMAGE_TAG=$(date +%s)
                   LATEST_TAG="$IMAGE_TAG:latest"
                   echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+                  echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
 
+                  # Tag the image with the repository URL and the generated tag
+                  docker tag eastleigh-real-estate:latest ${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_URI }}:$IMAGE_TAG
+
+                  # Build and push the Docker image to ECR
                   docker buildx build \
                     --platform linux/arm64 \
+                    -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_URI }}:$IMAGE_TAG \
                     -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_URI }}:$LATEST_TAG \
                     --push .
 
