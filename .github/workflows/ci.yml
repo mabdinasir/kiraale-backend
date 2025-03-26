@@ -63,19 +63,14 @@ jobs:
 
             - name: Build and Push Docker Image
               run: |
-                  IMAGE_TAG=$(date +%s)
-                  LATEST_TAG="$IMAGE_TAG:latest"
+                  IMAGE_TAG=$(date +%s)  # Generate a unique tag
                   echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
-                  echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
 
-                  # Tag the image with the repository URL and the generated tag
-                  docker tag eastleigh-real-estate:latest ${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_URI }}:$IMAGE_TAG
-
-                  # Build and push the Docker image to ECR
+                  # Build the Docker image for ARM64 architecture and push to ECR
                   docker buildx build \
                     --platform linux/arm64 \
-                    -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_URI }}:$IMAGE_TAG \
-                    -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_URI }}:$LATEST_TAG \
+                    -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:$IMAGE_TAG \
+                    -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:latest \
                     --push .
 
             - name: Update ECS Task Definition
