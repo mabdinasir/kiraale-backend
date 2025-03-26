@@ -27,19 +27,13 @@ jobs:
                       .bun
                       node_modules
                   key: bun-deps-${{ hashFiles('**/bun.lockb') }}
-                  restore-keys: |
-                      bun-deps-
 
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: '22'
-
             - name: Install Bun
               run: curl -fsSL https://bun.sh/install | bash
-              env:
-                  BUN_INSTALL: /home/runner/.bun
-
             - name: Add Bun to PATH
               run: echo "/home/runner/.bun/bin" >> $GITHUB_PATH
 
@@ -65,8 +59,7 @@ jobs:
               with:
                   aws-access-key-id: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_ACCESS_KEY_ID }}
                   aws-secret-access-key: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SECRET_ACCESS_KEY }}
-                  aws-region: ${{ secrets.AWS_REGION }}
-
+                  aws-region: ${{ env.AWS_REGION }}
             - name: Build and Push
               uses: docker/build-push-action@v4
               with:
@@ -74,7 +67,6 @@ jobs:
                   push: true
                   tags: ${{ env.ECR_REPO }}:latest
                   platforms: linux/arm64
-
             - name: Force Deployment
               run: |
                   aws ecs update-service \
