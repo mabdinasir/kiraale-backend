@@ -47,8 +47,3 @@ coverage/
 
 # Prisma related files
 prisma/migrations/
-
-# npm package lock file (optional)
-package-lock.json
-yarn.lock
-bun.lockb
