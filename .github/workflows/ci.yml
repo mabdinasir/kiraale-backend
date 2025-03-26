@@ -63,14 +63,14 @@ jobs:
 
             - name: Build and Push Docker Image
               run: |
-                  IMAGE_TAG=$(date +%s)  # Generate a unique tag
-                  LATEST_TAG="$IMAGE_TAG:latest"
+                  IMAGE_TAG=$(date +%s)  # Generate unique timestamp
                   echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
-                  # Build the Docker image and tag it with both the unique IMAGE_TAG and :latest
+                  # Build with both timestamp and latest tags
                   docker buildx build \
                     --platform linux/arm64 \
-                    -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_URI }}:$LATEST_TAG \
+                    -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_URI }}:$IMAGE_TAG \
+                    -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_URI }}:latest \
                     --push .
 
             - name: Update ECS Task Definition
