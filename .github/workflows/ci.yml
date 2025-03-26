@@ -62,17 +62,49 @@ jobs:
               uses: aws-actions/amazon-ecr-login@v2
 
             # Build and push the Docker image
-            - name: Build and Push
+            - name: Build and Push Docker Image
               uses: docker/build-push-action@v4
               with:
                   context: .
                   push: true
-                  tags: ${{ env.ECR_REPO }}:latest
+                  tags: |
+                      ${{ env.ECR_REPO }}:latest
+                      ${{ env.ECR_REPO }}:${{ github.sha }}
                   platforms: linux/arm64
 
-            - name: Force Deployment
+            # Deploy to ECS
+            - name: Deploy to ECS
+              env:
+                  TASK_DEFINITION: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_TASK_DEFINITION }}
               run: |
+                  # Get the existing task definition
+                  echo "Getting current task definition for: $TASK_DEFINITION"
+                  TASK_DEFINITION_JSON=$(aws ecs describe-task-definition --task-definition "$TASK_DEFINITION")
+
+                  # Create new container definitions with updated image
+                  echo "Updating container image to: $ECR_REPO:${{ github.sha }}"
+                  NEW_CONTAINER_DEFS=$(echo "$TASK_DEFINITION_JSON" | \
+                    jq --arg IMAGE "$ECR_REPO:${{ github.sha }}" \
+                    '.taskDefinition.containerDefinitions | map(.image = $IMAGE)')
+
+                  # Register new task definition
+                  echo "Registering new task definition revision"
+                  aws ecs register-task-definition \
+                    --family "$TASK_DEFINITION" \
+                    --container-definitions "$NEW_CONTAINER_DEFS" \
+                    --cpu "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.cpu')" \
+                    --memory "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.memory')" \
+                    --network-mode "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.networkMode')" \
+                    --requires-compatibilities "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.requiresCompatibilities[]')" \
+                    --execution-role-arn "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.executionRoleArn')" \
+                    --task-role-arn "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.taskRoleArn')"
+
+                  # Update ECS service
+                  echo "Updating ECS service: $SERVICE"
                   aws ecs update-service \
-                    --cluster $CLUSTER \
-                    --service $SERVICE \
+                    --cluster "$CLUSTER" \
+                    --service "$SERVICE" \
+                    --task-definition "$TASK_DEFINITION" \
                     --force-new-deployment
+
+                  echo "Deployment initiated successfully"
