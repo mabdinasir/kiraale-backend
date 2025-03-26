@@ -64,34 +64,38 @@ jobs:
             - name: Build and Push Docker Image
               run: |
                   IMAGE_TAG=$(date +%s)  # Generate a unique tag
+                  LATEST_TAG="$IMAGE_TAG:latest"
                   echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
-                  # Build the Docker image for ARM64 architecture and push to ECR
+                  # Build the Docker image and tag it with both the unique IMAGE_TAG and :latest
                   docker buildx build \
                     --platform linux/arm64 \
-                    -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:$IMAGE_TAG \
-                    -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REPOSITORY_URI }}:latest \
+                    -t ${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_URI }}:$LATEST_TAG \
                     --push .
 
             - name: Update ECS Task Definition
               run: |
+                  # Fetch the current ECS Task Definition
                   TASK_DEFINITION_JSON=$(aws ecs describe-task-definition --task-definition ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_TASK_DEFINITION }} --query taskDefinition | jq 'del(.status, .taskDefinitionArn, .revision, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
 
+                  # Update the ECS Task Definition with the new image URI
                   echo "$TASK_DEFINITION_JSON" | jq --arg IMAGE_URI "${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_URI }}:$IMAGE_TAG" '.containerDefinitions[0].image = $IMAGE_URI' > new-task-def.json
 
+                  # Add secrets from AWS Secrets Manager to the task definition
                   echo "$(jq '.containerDefinitions[0].secrets += [
-                      {"name": "PORT", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PORT"},
-                      {"name": "JWT_SECRET", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:JWT_SECRET"},
-                      {"name": "DATABASE_URL", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:DATABASE_URL"},
-                      {"name": "PROFILE_PIC_ACCESS_KEY_ID", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROFILE_PIC_ACCESS_KEY_ID"},
-                      {"name": "PROFILE_PIC_SECRET_ACCESS_KEY", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROFILE_PIC_SECRET_ACCESS_KEY"},
-                      {"name": "PROFILE_PIC_BUCKET_REGION", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROFILE_PIC_BUCKET_REGION"},
-                      {"name": "PROFILE_PIC_BUCKET_NAME", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROFILE_PIC_BUCKET_NAME"},
-                      {"name": "PROPERTIES_ACCESS_KEY_ID", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROPERTIES_ACCESS_KEY_ID"},
-                      {"name": "PROPERTIES_SECRET_ACCESS_KEY", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROPERTIES_SECRET_ACCESS_KEY"},
-                      {"name": "PROPERTIES_BUCKET_REGION", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROPERTIES_BUCKET_REGION"}
-                    ]' new-task-def.json)" > new-task-def.json
+                    {"name": "PORT", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PORT"},
+                    {"name": "JWT_SECRET", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:JWT_SECRET"},
+                    {"name": "DATABASE_URL", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:DATABASE_URL"},
+                    {"name": "PROFILE_PIC_ACCESS_KEY_ID", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROFILE_PIC_ACCESS_KEY_ID"},
+                    {"name": "PROFILE_PIC_SECRET_ACCESS_KEY", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROFILE_PIC_SECRET_ACCESS_KEY"},
+                    {"name": "PROFILE_PIC_BUCKET_REGION", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROFILE_PIC_BUCKET_REGION"},
+                    {"name": "PROFILE_PIC_BUCKET_NAME", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROFILE_PIC_BUCKET_NAME"},
+                    {"name": "PROPERTIES_ACCESS_KEY_ID", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROPERTIES_ACCESS_KEY_ID"},
+                    {"name": "PROPERTIES_SECRET_ACCESS_KEY", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROPERTIES_SECRET_ACCESS_KEY"},
+                    {"name": "PROPERTIES_BUCKET_REGION", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:your-account-id:secret:PROPERTIES_BUCKET_REGION"}
+                  ]' new-task-def.json)" > new-task-def.json
 
+                  # Register the new ECS Task Definition
                   NEW_TASK_REVISION=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json --query "taskDefinition.taskDefinitionArn" --output text)
 
                   if [ -z "$NEW_TASK_REVISION" ]; then
