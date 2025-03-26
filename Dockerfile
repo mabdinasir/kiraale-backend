@@ -1,27 +1,27 @@
-# Use official Bun image
-FROM oven/bun:1.1-alpine
+# Use Alpine Node.js for a lightweight image
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
 
 # Copy package files and Prisma schema
-COPY package.json bun.lockb ./
+COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
-# Install dependencies (Bun will handle both dev and prod)
-RUN bun install
+# Install dependencies (includes Prisma CLI from devDependencies)
+RUN npm ci --omit=dev
 
-# Install PM2 globally (using npm that comes with Bun)
+# Install PM2 globally
 RUN npm install -g pm2
 
-# Generate Prisma Client
-RUN bunx prisma generate
+# Generate Prisma Client (schema is now available)
+RUN npx prisma generate
 
 # Copy the rest of the application files
 COPY . .
 
 # Build the TypeScript project
-RUN bun run build
+RUN npm run build
 
 # Expose the application port
 EXPOSE 8080

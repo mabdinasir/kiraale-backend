@@ -20,33 +20,26 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Cache Bun dependencies
+            - name: Cache node_modules
               uses: actions/cache@v3
               with:
-                  path: |
-                      .bun
-                      node_modules
-                  key: bun-deps-${{ hashFiles('**/bun.lockb') }}
+                  path: node_modules
+                  key: node-modules-${{ hashFiles('package-lock.json') }}
 
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: '22'
-            - name: Install Bun
-              run: curl -fsSL https://bun.sh/install | bash
-            - name: Add Bun to PATH
-              run: echo "/home/runner/.bun/bin" >> $GITHUB_PATH
-              env:
-                  BUN_INSTALL: /home/runner/.bun
+                  cache: 'npm'
 
             - name: Install dependencies
-              run: bun install
+              run: npm ci
 
             - name: Run ESLint
-              run: bun run lint
+              run: npm run lint
 
             - name: Run Prettier
-              run: bun run fmt:check
+              run: npm run fmt:check
 
     build-and-deploy:
         needs: lint-and-format
@@ -62,6 +55,7 @@ jobs:
                   aws-access-key-id: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_ACCESS_KEY_ID }}
                   aws-secret-access-key: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SECRET_ACCESS_KEY }}
                   aws-region: ${{ env.AWS_REGION }}
+
             - name: Build and Push
               uses: docker/build-push-action@v4
               with:
@@ -69,6 +63,7 @@ jobs:
                   push: true
                   tags: ${{ env.ECR_REPO }}:latest
                   platforms: linux/arm64
+
             - name: Force Deployment
               run: |
                   aws ecs update-service \
