@@ -1,5 +1,5 @@
 # Use Alpine Node.js for a lightweight image
-FROM node:lts-alpine
+FROM --platform=linux/arm64 node:lts-alpine
 
 # Set working directory
 WORKDIR /app
