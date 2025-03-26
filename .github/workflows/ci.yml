@@ -83,7 +83,6 @@ jobs:
 
                   # Add secrets from AWS Secrets Manager to the task definition
                   echo "$(jq '.containerDefinitions[0].secrets += [
-                  {"name": "PORT", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:PORT"},
                   {"name": "JWT_SECRET", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:JWT_SECRET"},
                   {"name": "DATABASE_URL", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:DATABASE_URL"},
                   {"name": "PROFILE_PIC_ACCESS_KEY_ID", "valueFrom": "arn:aws:secretsmanager:${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:PROFILE_PIC_ACCESS_KEY_ID"},
