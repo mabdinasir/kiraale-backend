@@ -27,6 +27,8 @@ jobs:
                       .bun
                       node_modules
                   key: bun-deps-${{ hashFiles('**/bun.lockb') }}
+                  restore-keys: |
+                      bun-deps-
 
             - name: Set up Node.js
               uses: actions/setup-node@v4
