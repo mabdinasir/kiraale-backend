@@ -55,9 +55,9 @@ jobs:
             - name: Configure AWS Credentials
               uses: aws-actions/configure-aws-credentials@v2
               with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: ${{ env.AWS_REGION }}
+                  aws-access-key-id: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ secrets.AWS_REGION }}
 
             # Setup Docker Buildx with caching
             - uses: docker/setup-buildx-action@v2
