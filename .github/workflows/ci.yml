@@ -83,53 +83,29 @@ jobs:
             # Build and push Docker image
             - name: Build and Push Docker Image
               run: |
-                  IMAGE_TAG=$(date +%s)
-                  echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
-
                   docker buildx build \
                     --platform linux/arm64 \
-                    -t $ECR_REPO:$IMAGE_TAG \
                     -t $ECR_REPO:latest \
-                    --cache-from type=registry,ref=$ECR_REPO:buildcache \
                     --push .
 
-            # Cleanup old images (keep last 3)
-            - name: Prune Old Images
-              continue-on-error: true
+            - name: Force ECS Service Update
               run: |
-                  # Delete all but last 3 tagged images (run in background)
-                  (
-                    aws ecr list-images \
-                      --repository-name $ECR_REPO_NAME \
-                      --query 'imageIds[?type(imageTag)!=`null`].imageTag' \
-                      --output text \
-                      | sort -r \
-                      | tail -n +4 \
-                      | xargs -P 5 -I {} aws ecr batch-delete-image \
-                          --repository-name $ECR_REPO_NAME \
-                          --image-ids imageTag={}
-                  ) &
-
-            # Update ECS Service
-            - name: Update ECS Service
-              run: |
-                  # Get the current task definition revision
-                  ecs_task_definition=$(aws ecs describe-task-definition \
-                    --task-definition ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_TASK_DEFINITION }} \
-                    --query "taskDefinition.revision" \
+                  # Get full task definition ARN
+                  TASK_ARN=$(aws ecs describe-task-definition \
+                    --task-definition $TASK_DEF \
+                    --query 'taskDefinition.taskDefinitionArn' \
                     --output text)
 
-                  # Update ECS service with the new task definition
+                  # Force new deployment
                   aws ecs update-service \
-                    --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
-                    --service ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }} \
+                    --cluster $CLUSTER \
+                    --service $SERVICE \
                     --force-new-deployment \
-                    --task-definition $ecs_task_definition \
-                    --deployment-configuration maximumPercent=200,minimumHealthyPercent=50
+                    --task-definition $TASK_ARN
 
-                  # Wait for the service to stabilize (optional: add max-attempts and shorter delay to speed it up)
+                  # Wait for service to stabilize (faster than default)
                   aws ecs wait services-stable \
-                    --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
-                    --services ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }} \
+                    --cluster $CLUSTER \
+                    --services $SERVICE \
                     --max-attempts 10 \
                     --waiter-delay 10
