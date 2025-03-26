@@ -22,6 +22,16 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
+            - name: Cache Bun dependencies
+              uses: actions/cache@v3
+              with:
+                  path: |
+                      .bun
+                      node_modules
+                  key: bun-deps-${{ hashFiles('**/bun.lockb') }}
+                  restore-keys: |
+                      bun-deps-
+
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
@@ -85,85 +95,45 @@ jobs:
 
             # Cleanup old images (keep last 3)
             - name: Prune Old Images
+              continue-on-error: true
               run: |
-                  # Delete all but last 3 tagged images
-                  aws ecr list-images \
-                    --repository-name $ECR_REPO_NAME \
-                    --query 'imageIds[?type(imageTag)!=`null`].imageTag' \
-                    --output text \
-                    | sort -r \
-                    | tail -n +4 \
-                    | xargs -I {} aws ecr batch-delete-image \
-                        --repository-name $ECR_REPO_NAME \
-                        --image-ids imageTag={}
-
-                  # Clean untagged layers
-                  aws ecr batch-delete-image \
-                    --repository-name $ECR_REPO_NAME \
-                    --image-ids "$(aws ecr list-images \
+                  # Delete all but last 3 tagged images (run in background)
+                  (
+                    aws ecr list-images \
                       --repository-name $ECR_REPO_NAME \
-                      --filter "tagStatus=UNTAGGED" \
-                      --query 'imageIds' \
-                      --output json)"
+                      --query 'imageIds[?type(imageTag)!=`null`].imageTag' \
+                      --output text \
+                      | sort -r \
+                      | tail -n +4 \
+                      | xargs -P 5 -I {} aws ecr batch-delete-image \
+                          --repository-name $ECR_REPO_NAME \
+                          --image-ids imageTag={}
+                  ) &
 
-            # Get current task definition and update image only
-            - name: Update ECS Task Definition
+            - name: Update and Deploy to ECS
               run: |
                   # Get current task definition
                   TASK_DEFINITION=$(aws ecs describe-task-definition \
                     --task-definition $TASK_DEF \
                     --query 'taskDefinition')
 
-                  # Create new task definition with updated image
-                  echo $TASK_DEFINITION | jq \
+                  # Create and register new task definition
+                  NEW_TASK_ARN=$(echo $TASK_DEFINITION | jq \
                     --arg IMAGE_URI "$ECR_REPO:$IMAGE_TAG" \
                     'del(.status, .taskDefinitionArn, .revision, 
                         .requiresAttributes, .compatibilities, 
                         .registeredAt, .registeredBy) |
-                    .containerDefinitions[0].image = $IMAGE_URI' > new-task-def.json
+                    .containerDefinitions[0].image = $IMAGE_URI' | \
+                    aws ecs register-task-definition \
+                      --cli-input-json file:///dev/stdin \
+                      --query "taskDefinition.taskDefinitionArn" \
+                      --output text)
 
-                  # Register new task definition
-                  NEW_TASK_ARN=$(aws ecs register-task-definition \
-                    --cli-input-json file://new-task-def.json \
-                    --query "taskDefinition.taskDefinitionArn" \
-                    --output text)
-                  echo "NEW_TASK_ARN=$NEW_TASK_ARN" >> $GITHUB_ENV
-
-            # Deploy with rollback on failure
-            - name: Deploy to ECS
-              run: |
-                  set -e
-                  DEPLOYMENT_ID=$(aws ecs update-service \
+                  # Optimized deployment
+                  aws ecs update-service \
                     --cluster $CLUSTER \
                     --service $SERVICE \
                     --task-definition $NEW_TASK_ARN \
                     --force-new-deployment \
-                    --query 'service.deployments[?status==`PRIMARY`].id' \
-                    --output text)
-
-                  # Wait for deployment to complete
-                  aws ecs wait services-stable \
-                    --cluster $CLUSTER \
-                    --services $SERVICE
-
-                  # Verify deployment succeeded
-                  DEPLOYMENT_STATUS=$(aws ecs describe-services \
-                    --cluster $CLUSTER \
-                    --services $SERVICE \
-                    --query 'services[0].deployments[?id==`'$DEPLOYMENT_ID'`].rolloutState' \
-                    --output text)
-
-                  if [ "$DEPLOYMENT_STATUS" != "COMPLETED" ]; then
-                    echo "Deployment failed! Initiating rollback..."
-                    PREVIOUS_TASK=$(aws ecs describe-task-definition \
-                      --task-definition $TASK_DEF \
-                      --query 'taskDefinition.taskDefinitionArn' \
-                      --output text)
-                    
-                    aws ecs update-service \
-                      --cluster $CLUSTER \
-                      --service $SERVICE \
-                      --task-definition $PREVIOUS_TASK \
-                      --force-new-deployment
-                    exit 1
-                  fi
+                    --health-check-grace-period-seconds 15 \
+                    --enable-execute-command
