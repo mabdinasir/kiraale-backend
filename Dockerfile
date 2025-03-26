@@ -9,7 +9,7 @@ COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
 # Install ALL dependencies (including dev dependencies for Prisma CLI)
-RUN npm ci
+RUN npm install
 
 # Install PM2 globally
 RUN npm install -g pm2
