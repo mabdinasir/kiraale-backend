@@ -48,14 +48,15 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            # Configure AWS credentials FIRST
+            # Configure AWS credentials
             - name: Configure AWS Credentials
               uses: aws-actions/configure-aws-credentials@v2
               with:
                   aws-access-key-id: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_ACCESS_KEY_ID }}
                   aws-secret-access-key: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SECRET_ACCESS_KEY }}
-                  aws-region: ${{ env.AWS_REGION }}
+                  aws-region: ${{ secrets.AWS_REGION }}
 
+            # Build and push the Docker image
             - name: Build and Push
               uses: docker/build-push-action@v4
               with:
