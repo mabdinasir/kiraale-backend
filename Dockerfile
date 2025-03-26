@@ -1,5 +1,5 @@
 # Use Alpine Node.js for a lightweight image
-FROM node:20-alpine
+FROM node:lts-alpine
 
 # Set working directory
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
-# Install ALL dependencies (including dev dependencies for Prisma CLI)
+# Install ALL dependencies
 RUN npm install
 
 # Install PM2 globally
