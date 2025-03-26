@@ -8,14 +8,17 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
-# Install dependencies (includes Prisma CLI from devDependencies)
-RUN npm ci --omit=dev
+# Install ALL dependencies (including dev dependencies for Prisma CLI)
+RUN npm ci
 
 # Install PM2 globally
 RUN npm install -g pm2
 
 # Generate Prisma Client (schema is now available)
 RUN npx prisma generate
+
+# Remove dev dependencies after Prisma generation (optional)
+RUN npm prune --omit=dev
 
 # Copy the rest of the application files
 COPY . .
