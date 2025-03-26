@@ -17,9 +17,6 @@ RUN npm install -g pm2
 # Generate Prisma Client (schema is now available)
 RUN npx prisma generate
 
-# Remove dev dependencies after Prisma generation (optional)
-RUN npm prune --omit=dev
-
 # Copy the rest of the application files
 COPY . .
 
