@@ -88,7 +88,7 @@ jobs:
                     -t $ECR_REPO:latest \
                     --push .
 
-            - name: Force ECS Service Update
+            - name: ECS Service Update
               run: |
                   # Get full task definition ARN
                   TASK_ARN=$(aws ecs describe-task-definition \
@@ -107,5 +107,3 @@ jobs:
                   aws ecs wait services-stable \
                     --cluster $CLUSTER \
                     --services $SERVICE \
-                    --max-attempts 10 \
-                    --waiter-delay 10
