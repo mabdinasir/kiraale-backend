@@ -10,10 +10,8 @@ on:
 env:
     AWS_REGION: ${{ secrets.AWS_REGION }}
     ECR_REPO: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_URI }}
-    ECR_REPO_NAME: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECR_REPOSITORY_NAME }}
     CLUSTER: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }}
     SERVICE: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }}
-    TASK_DEF: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_TASK_DEFINITION }}
 
 jobs:
     lint-and-format:
@@ -29,8 +27,6 @@ jobs:
                       .bun
                       node_modules
                   key: bun-deps-${{ hashFiles('**/bun.lockb') }}
-                  restore-keys: |
-                      bun-deps-
 
             - name: Set up Node.js
               uses: actions/setup-node@v4
@@ -69,41 +65,17 @@ jobs:
                   aws-secret-access-key: ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SECRET_ACCESS_KEY }}
                   aws-region: ${{ secrets.AWS_REGION }}
 
-            # Setup Docker Buildx with caching
-            - uses: docker/setup-buildx-action@v2
+            - name: Build and Push
+              uses: docker/build-push-action@v4
               with:
-                  driver-opts: |
-                      image=moby/buildkit:latest
-                      network=host
+                  context: .
+                  push: true
+                  tags: ${{ env.ECR_REPO }}:latest
+                  platforms: linux/arm64
 
-            # ECR Login AFTER AWS credentials
-            - name: Login to Amazon ECR
-              uses: aws-actions/amazon-ecr-login@v2
-
-            # Build and push Docker image
-            - name: Build and Push Docker Image
+            - name: Force Deployment
               run: |
-                  docker buildx build \
-                    --platform linux/arm64 \
-                    -t $ECR_REPO:latest \
-                    --push .
-
-            - name: ECS Service Update
-              run: |
-                  # Get full task definition ARN
-                  TASK_ARN=$(aws ecs describe-task-definition \
-                    --task-definition $TASK_DEF \
-                    --query 'taskDefinition.taskDefinitionArn' \
-                    --output text)
-
-                  # Force new deployment
                   aws ecs update-service \
                     --cluster $CLUSTER \
                     --service $SERVICE \
-                    --force-new-deployment \
-                    --task-definition $TASK_ARN
-
-                  # Wait for service to stabilize (faster than default)
-                  aws ecs wait services-stable \
-                    --cluster $CLUSTER \
-                    --services $SERVICE \
+                    --force-new-deployment
