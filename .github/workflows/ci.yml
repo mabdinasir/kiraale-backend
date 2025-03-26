@@ -110,30 +110,26 @@ jobs:
                           --image-ids imageTag={}
                   ) &
 
-            - name: Update and Deploy to ECS
+            # Update ECS Service
+            - name: Update ECS Service
               run: |
-                  # Get current task definition
-                  TASK_DEFINITION=$(aws ecs describe-task-definition \
-                    --task-definition $TASK_DEF \
-                    --query 'taskDefinition')
+                  # Get the current task definition revision
+                  ecs_task_definition=$(aws ecs describe-task-definition \
+                    --task-definition ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_TASK_DEFINITION }} \
+                    --query "taskDefinition.revision" \
+                    --output text)
 
-                  # Create and register new task definition
-                  NEW_TASK_ARN=$(echo $TASK_DEFINITION | jq \
-                    --arg IMAGE_URI "$ECR_REPO:$IMAGE_TAG" \
-                    'del(.status, .taskDefinitionArn, .revision, 
-                        .requiresAttributes, .compatibilities, 
-                        .registeredAt, .registeredBy) |
-                    .containerDefinitions[0].image = $IMAGE_URI' | \
-                    aws ecs register-task-definition \
-                      --cli-input-json file:///dev/stdin \
-                      --query "taskDefinition.taskDefinitionArn" \
-                      --output text)
-
-                  # Optimized deployment
+                  # Update ECS service with the new task definition
                   aws ecs update-service \
-                    --cluster $CLUSTER \
-                    --service $SERVICE \
-                    --task-definition $NEW_TASK_ARN \
+                    --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
+                    --service ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }} \
                     --force-new-deployment \
-                    --health-check-grace-period-seconds 15 \
-                    --enable-execute-command
+                    --task-definition $ecs_task_definition \
+                    --deployment-configuration maximumPercent=200,minimumHealthyPercent=50
+
+                  # Wait for the service to stabilize (optional: add max-attempts and shorter delay to speed it up)
+                  aws ecs wait services-stable \
+                    --cluster ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_CLUSTER_NAME }} \
+                    --services ${{ secrets.EASTLEIGH_REAL_ESTATE_ECS_SERVICE_NAME }} \
+                    --max-attempts 10 \
+                    --waiter-delay 10
