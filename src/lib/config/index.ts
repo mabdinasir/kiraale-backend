@@ -5,3 +5,4 @@ export const allowedFileTypes = [...allowedImageTypes, ...allowedVideoTypes]
 export const maxFileSize = 1048576 * 10 // 10MB
 
 export const mpesaAmount = 1
+export const evcPlusAmount = 1

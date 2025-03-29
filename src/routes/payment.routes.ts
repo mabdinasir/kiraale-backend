@@ -3,6 +3,7 @@ import { handleStkPush } from '@controllers/api/payments/stkPush'
 import { mpesaAccessToken } from '@middleware/mpesaAccessToken'
 import checkMpesaPaymentStatus from '@controllers/api/payments/checkMpesaPaymentStatus'
 import { authMiddleware } from '@middleware/authMiddleware'
+import { evcPlusPurchase } from '@controllers/api/payments/evcPlusPurchase'
 
 const paymentRoutes: RouteGroup = {
     basePath: '/payments',
@@ -18,6 +19,12 @@ const paymentRoutes: RouteGroup = {
             method: 'get',
             middlewares: [authMiddleware],
             handler: checkMpesaPaymentStatus,
+        },
+        {
+            path: '/evcPlusPurchase',
+            method: 'post',
+            middlewares: [],
+            handler: [evcPlusPurchase],
         },
     ],
 }
