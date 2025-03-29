@@ -1,6 +1,6 @@
-# Eastleigh Real Estate
+# Kiraale
 
-Eastleigh Real Estate is a modern real estate application that leverages TypeScript, Prisma, and Bun for a fast and scalable development experience.
+Kiraale is a modern real estate application that leverages TypeScript, Prisma, and Bun for a fast and scalable development experience.
 
 ## Table of Contents
 
@@ -26,8 +26,8 @@ Eastleigh Real Estate is a modern real estate application that leverages TypeScr
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/mabdinasir/eastleighrealestate.git
-    cd eastleighrealestate
+    git clone https://github.com/mabdinasir/kiraale-be.git
+    cd kiraale-be
     ```
 
 2. Install dependencies:

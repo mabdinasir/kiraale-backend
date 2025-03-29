@@ -37,7 +37,7 @@ const handleStkPush: RequestHandler = async (request, response) => {
         PartyB: process.env.MPESA_BUSINESS_SHORT_CODE,
         PhoneNumber: formattedPhone,
         CallBackURL: 'https://mydomain.com/path',
-        AccountReference: 'Eastleigh Real Estate',
+        AccountReference: 'Kiraale',
         TransactionDesc: 'Payment for Property Listing',
     }
 

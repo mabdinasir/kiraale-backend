@@ -1,6 +1,6 @@
 {
-    "name": "eastleighrealestate",
-    "description": "Eastleigh Real Estate",
+    "name": "kiraale-be",
+    "description": "Kiraale Backend",
     "module": "src/main.ts",
     "main": "src/main.ts",
     "engines": {
@@ -10,8 +10,8 @@
     "version": "1.0.0",
     "scripts": {
         "build": "tsc && resolve-tspaths && prisma generate",
-        "start": "pm2 start dist/main.js --name eastleigh-real-estate",
-        "dev": "pm2 start bun --name eastleigh-real-estate-dev -- run src/main.ts --watch",
+        "start": "pm2 start dist/main.js --name kiraale-be",
+        "dev": "pm2 start bun --name kiraale-be-dev -- run src/main.ts --watch",
         "nodemon": "nodemon --exec bun run src/main.ts",
         "type-check": "tsc --noEmit --watch",
         "lint": "eslint . --ignore-pattern 'dist'",

@@ -50,7 +50,7 @@ docker ps
 
 docker run -d -p <host_port>:<container_port> --name <container_name> <image_name>:<tag>
 
-<!-- docker run -p 8080:8080 eastleigh-real-estate -->
+<!-- docker run -p 8080:8080 kiraale-be -->
 
 # Start a stopped container
 

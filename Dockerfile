@@ -27,4 +27,4 @@ RUN npm run build
 EXPOSE 8080
 
 # Start the application using PM2
-CMD ["pm2-runtime", "dist/main.js", "--name", "eastleigh-real-estate-production", "--watch", "--no-daemon"]
+CMD ["pm2-runtime", "dist/main.js", "--name", "kiraale-be", "--watch", "--no-daemon"]
