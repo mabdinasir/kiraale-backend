@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 app.use(cookieParser())
 
 app.get('/', (req, res) => {
-    res.send('New Test')
+    res.send('New Test: Kiraale')
 })
 
 const router = express.Router()
