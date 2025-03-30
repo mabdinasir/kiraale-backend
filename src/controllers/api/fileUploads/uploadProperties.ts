@@ -33,7 +33,7 @@ const uploadProperties: RequestHandler = async (request, response) => {
     try {
         // Initialize S3 client
         const s3Client = new S3Client({
-            region: process.env.PROPERTIES_BUCKET_REGION,
+            region: process.env.AWS_BUCKET_REGION,
             credentials: {
                 accessKeyId: process.env.PROPERTIES_ACCESS_KEY_ID!,
                 secretAccessKey: process.env.PROPERTIES_SECRET_ACCESS_KEY!,

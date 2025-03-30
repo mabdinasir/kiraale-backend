@@ -36,7 +36,7 @@ const uploadProfilePic: RequestHandler = async (request, response) => {
 
         // Initialize S3 client
         const s3Client = new S3Client({
-            region: process.env.PROFILE_PIC_BUCKET_REGION,
+            region: process.env.AWS_BUCKET_REGION,
             credentials: {
                 accessKeyId: process.env.PROFILE_PIC_ACCESS_KEY_ID!,
                 secretAccessKey: process.env.PROFILE_PIC_SECRET_ACCESS_KEY!,
