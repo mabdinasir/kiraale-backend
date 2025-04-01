@@ -1,110 +1,111 @@
-name: CI/CD Pipeline
+# name: CI/CD Pipeline
 
-on:
-    push:
-        branches: [main]
-    pull_request:
-        branches: [main]
-        types: [closed]
+# on:
+#     push:
+#         branches: [main]
+#     pull_request:
+#         branches: [main]
+#         types: [closed]
 
-env:
-    AWS_REGION: ${{ secrets.AWS_REGION }}
-    ECR_REPO: ${{ secrets.KIRAALE_ECR_REPOSITORY_URI }}
-    CLUSTER: ${{ secrets.KIRAALE_ECS_CLUSTER_NAME }}
-    SERVICE: ${{ secrets.KIRAALE_ECS_SERVICE_NAME }}
+# env:
+#     AWS_REGION: ${{ secrets.AWS_REGION }}
+#     ECR_REPO: ${{ secrets.KIRAALE_ECR_REPOSITORY_URI }}
+#     CLUSTER: ${{ secrets.KIRAALE_ECS_CLUSTER_NAME }}
+#     SERVICE: ${{ secrets.KIRAALE_ECS_SERVICE_NAME }}
 
-jobs:
-    lint-and-format:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+# jobs:
+#     lint-and-format:
+#         runs-on: ubuntu-latest
+#         steps:
+#             - name: Checkout code
+#               uses: actions/checkout@v4
 
-            - name: Cache node_modules
-              uses: actions/cache@v3
-              with:
-                  path: node_modules
-                  key: node-modules-${{ hashFiles('package-lock.json') }}
+#             - name: Cache node_modules
+#               uses: actions/cache@v3
+#               with:
+#                   path: node_modules
+#                   key: node-modules-${{ hashFiles('package-lock.json') }}
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: '22'
-                  cache: 'npm'
+#             - name: Set up Node.js
+#               uses: actions/setup-node@v4
+#               with:
+#                   node-version: '22'
+#                   cache: 'npm'
 
-            - name: Install dependencies
-              run: npm ci
+#             - name: Install dependencies
+#               run: npm ci
 
-            - name: Run ESLint
-              run: npm run lint
+#             - name: Run ESLint
+#               run: npm run lint
 
-            - name: Run Prettier
-              run: npm run fmt:check
+#             - name: Run Prettier
+#               run: npm run fmt:check
 
-    build-and-deploy:
-        needs: lint-and-format
-        runs-on: ubuntu-latest
-        environment: production
-        steps:
-            - uses: actions/checkout@v4
+#     build-and-deploy:
+#         needs: lint-and-format
+#         runs-on: ubuntu-latest
+#         environment: production
+#         steps:
+#             - uses: actions/checkout@v4
 
-            # Configure AWS credentials
-            - name: Configure AWS Credentials
-              uses: aws-actions/configure-aws-credentials@v2
-              with:
-                  aws-access-key-id: ${{ secrets.ECS_CLI_ACCESS_KEY }}
-                  aws-secret-access-key: ${{ secrets.ECS_CLI_SECRET_ACCESS_KEY }}
-                  aws-region: ${{ secrets.AWS_REGION }}
+#             # Configure AWS credentials
+#             - name: Configure AWS Credentials
+#               uses: aws-actions/configure-aws-credentials@v2
+#               with:
+#                   aws-access-key-id: ${{ secrets.ECS_CLI_ACCESS_KEY }}
+#                   aws-secret-access-key: ${{ secrets.ECS_CLI_SECRET_ACCESS_KEY }}
+#                   aws-region: ${{ secrets.AWS_REGION }}
 
-            # Login to Amazon ECR
-            - name: Login to Amazon ECR
-              id: login-ecr
-              uses: aws-actions/amazon-ecr-login@v2
+#             # Login to Amazon ECR
+#             - name: Login to Amazon ECR
+#               id: login-ecr
+#               uses: aws-actions/amazon-ecr-login@v2
 
-            # Build and push the Docker image
-            - name: Build and Push Docker Image
-              uses: docker/build-push-action@v4
-              with:
-                  context: .
-                  push: true
-                  tags: |
-                      ${{ env.ECR_REPO }}:latest
-                      ${{ env.ECR_REPO }}:${{ github.sha }}
-                  platforms: linux/arm64
+#             # Build and push the Docker image
+#             - name: Build and Push Docker Image
+#               uses: docker/build-push-action@v4
+#               with:
+#                   context: .
+#                   push: true
+#                   tags: |
+#                       ${{ env.ECR_REPO }}:latest
+#                       ${{ env.ECR_REPO }}:${{ github.sha }}
+#                   platforms: linux/arm64
 
-            # Deploy to ECS
-            - name: Deploy to ECS
-              env:
-                  TASK_DEFINITION: ${{ secrets.KIRAALE_ECS_TASK_DEFINITION }}
-              run: |
-                  # Get the existing task definition
-                  echo "Getting current task definition for: $TASK_DEFINITION"
-                  TASK_DEFINITION_JSON=$(aws ecs describe-task-definition --task-definition "$TASK_DEFINITION")
+#             # Deploy to ECS
+#             - name: Deploy to ECS
+#               env:
+#                   TASK_DEFINITION: ${{ secrets.KIRAALE_ECS_TASK_DEFINITION }}
+#               run: |
+#                   # Get the existing task definition
+#                   echo "Getting current task definition for: $TASK_DEFINITION"
+#                   TASK_DEFINITION_JSON=$(aws ecs describe-task-definition --task-definition "$TASK_DEFINITION")
 
-                  # Create new container definitions with updated image
-                  echo "Updating container image to: $ECR_REPO:${{ github.sha }}"
-                  NEW_CONTAINER_DEFS=$(echo "$TASK_DEFINITION_JSON" | \
-                    jq --arg IMAGE "$ECR_REPO:${{ github.sha }}" \
-                    '.taskDefinition.containerDefinitions | map(.image = $IMAGE)')
+#                   # Create new container definitions with updated image
+#                   echo "Updating container image to: $ECR_REPO:${{ github.sha }}"
+#                   NEW_CONTAINER_DEFS=$(echo "$TASK_DEFINITION_JSON" | \
+#                     jq --arg IMAGE "$ECR_REPO:${{ github.sha }}" \
+#                     '.taskDefinition.containerDefinitions | map(.image = $IMAGE)')
 
-                  # Register new task definition
-                  echo "Registering new task definition revision"
-                  aws ecs register-task-definition \
-                    --family "$TASK_DEFINITION" \
-                    --container-definitions "$NEW_CONTAINER_DEFS" \
-                    --cpu "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.cpu')" \
-                    --memory "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.memory')" \
-                    --network-mode "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.networkMode')" \
-                    --requires-compatibilities "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.requiresCompatibilities[]')" \
-                    --execution-role-arn "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.executionRoleArn')" \
-                    --task-role-arn "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.taskRoleArn')"
+#                   # Register new task definition
+#                   echo "Registering new task definition revision"
+#                   aws ecs register-task-definition \
+#                     --family "$TASK_DEFINITION" \
+#                     --container-definitions "$NEW_CONTAINER_DEFS" \
+#                     --cpu "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.cpu')" \
+#                     --memory "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.memory')" \
+#                     --network-mode "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.networkMode')" \
+#                     --requires-compatibilities "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.requiresCompatibilities[]')" \
+#                     --execution-role-arn "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.executionRoleArn')" \
+#                     --task-role-arn "$(echo "$TASK_DEFINITION_JSON" | jq -r '.taskDefinition.taskRoleArn')"
 
-                  # Update ECS service
-                  echo "Updating ECS service: $SERVICE"
-                  aws ecs update-service \
-                    --cluster "$CLUSTER" \
-                    --service "$SERVICE" \
-                    --task-definition "$TASK_DEFINITION" \
-                    --force-new-deployment
+#                   # Update ECS service
+#                   echo "Updating ECS service: $SERVICE"
+#                   aws ecs update-service \
+#                     --cluster "$CLUSTER" \
+#                     --service "$SERVICE" \
+#                     --task-definition "$TASK_DEFINITION" \
+#                     --force-new-deployment
 
-                  echo "Deployment initiated successfully"
+#                   echo "Deployment initiated successfully"
+
