@@ -36,7 +36,7 @@ const handleStkPush: RequestHandler = async (request, response) => {
         PartyA: formattedPhone,
         PartyB: process.env.MPESA_BUSINESS_SHORT_CODE,
         PhoneNumber: formattedPhone,
-        CallBackURL: 'https://mydomain.com/path',
+        CallBackURL: `https://kiraale-8xk32.ondigitalocean.app/api/payments/mpesaCallback`,
         AccountReference: 'Kiraale',
         TransactionDesc: 'Payment for Property Listing',
     }
