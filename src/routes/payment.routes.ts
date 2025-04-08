@@ -5,6 +5,7 @@ import checkMpesaPaymentStatus from '@controllers/api/payments/checkMpesaPayment
 import { authMiddleware } from '@middleware/authMiddleware'
 import { evcPlusPurchase } from '@controllers/api/payments/evcPlusPurchase'
 import handleMpesaCallback from '@controllers/api/payments/mpesaCallback'
+import getPaymentByPropertyId from '@controllers/api/payments/getPaymentByPropertyId'
 
 const paymentRoutes: RouteGroup = {
     basePath: '/payments',
@@ -32,6 +33,12 @@ const paymentRoutes: RouteGroup = {
             method: 'post',
             middlewares: [],
             handler: evcPlusPurchase,
+        },
+        {
+            path: '/getPaymentByPropertyId/:propertyId',
+            method: 'get',
+            middlewares: [],
+            handler: [getPaymentByPropertyId],
         },
     ],
 }
