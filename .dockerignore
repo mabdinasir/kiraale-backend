@@ -35,15 +35,8 @@ Thumbs.db
 .env.test.local
 .env.production.local
 
-# Docker related files (optional)
-Dockerfile*
-.dockerignore
-
 # TypeScript build output
 *.tsbuildinfo
 
 # Coverage directory for code coverage tools like Jest, Mocha, etc.
 coverage/
-
-# Prisma related files
-prisma/migrations/
