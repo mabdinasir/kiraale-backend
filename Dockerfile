@@ -30,4 +30,4 @@ RUN bun run build
 EXPOSE 8080
 
 # Start with PM2
-CMD ["pm2-runtime", "dist/main.js", "--name", "kiraale-be", "--watch", "--no-daemon"]
+CMD ["/usr/local/bin/pm2-runtime", "dist/main.js", "--name", "kiraale-be", "--watch", "--no-daemon"]
