@@ -31,6 +31,7 @@ const addProperty: RequestHandler = async (request, response) => {
                 propertyType: propertyData.propertyType,
                 listingType: propertyData.listingType,
                 userId: request.user.id,
+                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
                 features: {
                     create: {
                         bedrooms: propertyData.bedrooms,
