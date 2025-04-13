@@ -6,5 +6,5 @@ generator client {
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
-  extensions = [pg_trgm, uuid_ossp(map: "uuid-ossp", schema: "extensions")]
+  extensions = [pg_trgm, uuid_ossp(map: "uuid-ossp")]
 }

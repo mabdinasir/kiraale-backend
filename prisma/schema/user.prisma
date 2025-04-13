@@ -22,6 +22,7 @@ model User {
   favoriteProperties FavoriteProperties[]
   properties         Property[]
   payments           Payment[]
+  ResetToken         ResetToken[]
 }
 
 enum Role {

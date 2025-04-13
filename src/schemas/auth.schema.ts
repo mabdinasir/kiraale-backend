@@ -37,3 +37,14 @@ export const signUpSchema = z
     .strict()
 
 export const authorizationSchema = z.string().regex(/^Bearer .+$/, 'Invalid authorization header format')
+
+export const resetPasswordSchema = z
+    .object({
+        token: z.string().min(1, 'Reset token is required'),
+        newPassword: passwordSchema,
+        confirmPassword: passwordSchema,
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+        message: "Passwords don't match",
+        path: ['confirmPassword'],
+    })
