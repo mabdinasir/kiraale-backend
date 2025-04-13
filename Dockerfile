@@ -1,14 +1,14 @@
 # Bun's Alpine image (smaller and faster)
-FROM --platform=linux/amd64 oven/bun:1.1-alpine
+FROM oven/bun:1.1-alpine
 
 WORKDIR /app
 
 # Copy package files and Prisma schema
-COPY package.json package-lock.json ./
+COPY package.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN bun install
+# Install dependencies (Bun will create bun.lockb) -> # Strict mode, like `npm ci`
+RUN bun install --frozen-lockfile  
 
 # Install PM2 globally
 RUN bun install -g pm2
@@ -16,12 +16,11 @@ RUN bun install -g pm2
 # Generate Prisma Client
 RUN bunx prisma generate
 
-# Copy the rest of the application
+# Build and run
 COPY . .
-
-# Build the project (Bun can run TypeScript directly, but tsc is fine too)
 RUN bun run build
 
+# Expose the application port
 EXPOSE 8080
 
 # Start with PM2
