@@ -20,5 +20,6 @@ RUN bun run build
 # Verify build output exists
 RUN ls -la dist/ && test -f dist/main.js
 
-# Option A: Direct Bun execution
-CMD ["bun", "dist/main.js"]
+# CMD ["bun", "dist/main.js"]
+CMD ["/usr/local/bin/pm2-runtime", "dist/main.js"]
+
