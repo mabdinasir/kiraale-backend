@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json bun.lockb ./
 COPY prisma ./prisma/
 
-# Install dependencies and PM2
+# Install dependencies
 RUN bun install --frozen-lockfile
 # Install PM2 globally
 RUN bun install -g pm2
@@ -17,10 +17,8 @@ RUN bunx prisma generate
 COPY . .
 RUN bun run build
 
-# Set production env
-ENV NODE_ENV=production
+# Verify build output exists
+RUN ls -la dist/ && test -f dist/main.js
 
-EXPOSE 8080
-
-# Start with PM2
-CMD ["/usr/local/bin/pm2-runtime", "dist/main.js", "--name", "kiraale-be", "--no-daemon"]
+# Option A: Direct Bun execution
+CMD ["bun", "dist/main.js"]
