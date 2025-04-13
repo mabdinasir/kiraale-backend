@@ -1,5 +1,10 @@
 FROM oven/bun:1.1-alpine
+
 WORKDIR /app
+
+# Install PM2 globally using npm instead of bun
+RUN apk add --no-cache nodejs npm && \
+    npm install -g pm2
 
 # Copy dependency files
 COPY package.json bun.lockb ./
@@ -15,4 +20,5 @@ RUN bunx prisma generate
 COPY . .
 RUN bun run build
 
-CMD ["bun", "dist/main.js"]
+# Use PM2 to run App
+CMD ["pm2-runtime", "dist/main.js"]
