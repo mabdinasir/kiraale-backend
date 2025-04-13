@@ -9,15 +9,14 @@
     "type": "module",
     "version": "1.0.0",
     "scripts": {
-        "build": "tsc && resolve-tspaths && prisma generate",
-        "start": "pm2 start dist/main.js --name kiraale-be",
-        "dev": "pm2 start bun --name kiraale-be-dev -- run src/main.ts --watch",
-        "nodemon": "nodemon --exec bun run src/main.ts",
-        "type-check": "tsc --noEmit --watch",
-        "lint": "eslint . --ignore-pattern 'dist'",
-        "lint:fix": "eslint . --fix --ignore-pattern 'dist'",
-        "fmt": "prettier --write .",
-        "fmt:check": "prettier --check ."
+        "build": "bun run tsc && bun run resolve-tspaths && bun run prisma generate",
+        "start": "bun run pm2 start dist/main.js --name kiraale-be",
+        "dev": "bun --watch src/main.ts",
+        "type-check": "bun run tsc --noEmit --watch",
+        "lint": "bun run eslint . --ignore-pattern 'dist'",
+        "lint:fix": "bun run eslint . --fix --ignore-pattern 'dist'",
+        "fmt": "bun run prettier --write .",
+        "fmt:check": "bun run prettier --check ."
     },
     "devDependencies": {
         "@eslint/js": "^9.20.0",
