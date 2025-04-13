@@ -15,10 +15,4 @@ RUN bunx prisma generate
 COPY . .
 RUN bun run build
 
-# Check if the build was successful
-RUN test -f dist/main.js && chmod +x dist/main.js || (echo "Build failed"; exit 1)
-
-# Verify build output exists
-RUN ls -la dist/ && test -f dist/main.js
-
-CMD ["sh", "-c", "while true; do bun dist/main.js; sleep 2; done"]
+CMD ["bun", "dist/main.js"]
