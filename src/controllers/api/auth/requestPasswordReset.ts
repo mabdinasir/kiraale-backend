@@ -52,7 +52,7 @@ const requestPasswordReset: RequestHandler = async (req, res) => {
     const resetUrl = `https://kiraale.com/auth/reset-password?token=${token}`
     // const resetUrl = `http://localhost:3000/auth/reset-password?token=${token}`
 
-    const template = resetPasswordTemplate(resetUrl, user.firstName)
+    const template = resetPasswordTemplate(resetUrl, `${user.firstName} ${user.lastName}`)
     await sendEmail(
         `"Kiraale Support" <${process.env.NODE_MAILER_EMAIL}>`,
         user.email,
