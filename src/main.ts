@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import express, { type Express } from 'express'
 import bodyParser from 'body-parser'
 import configureRoutes from '@routes/index'
+import { setupCrons } from '@lib/cron'
 
 dotenv.config()
 
@@ -24,4 +25,6 @@ const router = express.Router()
 configureRoutes(router)
 app.use(router)
 
-app.listen(port)
+app.listen(port, () => {
+    setupCrons()
+})
