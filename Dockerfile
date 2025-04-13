@@ -8,12 +8,6 @@ COPY prisma ./prisma/
 # Install dependencies
 RUN bun install --frozen-lockfile
 
-# Install PM2 globally
-RUN bun install -g pm2
-
-# Check pm2 installation path
-RUN which pm2
-
 # Generate Prisma Client
 RUN bunx prisma generate
 
@@ -27,4 +21,4 @@ RUN test -f dist/main.js && chmod +x dist/main.js || (echo "Build failed"; exit 
 # Verify build output exists
 RUN ls -la dist/ && test -f dist/main.js
 
-CMD ["sh", "-c", "pm2-runtime dist/main.js"]
+CMD ["sh", "-c", "while true; do bun dist/main.js; sleep 2; done"]
