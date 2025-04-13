@@ -21,5 +21,5 @@ RUN bun run build
 RUN ls -la dist/ && test -f dist/main.js
 
 # CMD ["bun", "dist/main.js"]
-CMD ["/usr/local/bin/pm2-runtime", "dist/main.js"]
+CMD ["pm2-runtime", "dist/main.js"]
 
