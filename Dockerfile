@@ -1,30 +1,28 @@
-# Use Alpine Node.js for a lightweight image
-FROM --platform=linux/amd64 node:lts-alpine
+# Bun's Alpine image (smaller and faster)
+FROM --platform=linux/amd64 oven/bun:1.1-alpine
 
-# Set working directory
 WORKDIR /app
 
 # Copy package files and Prisma schema
 COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
-# Install ALL dependencies
-RUN npm install
+# Install dependencies
+RUN bun install
 
 # Install PM2 globally
-RUN npm install -g pm2
+RUN bun install -g pm2
 
-# Generate Prisma Client (schema is now available)
-RUN npx prisma generate
+# Generate Prisma Client
+RUN bunx prisma generate
 
-# Copy the rest of the application files
+# Copy the rest of the application
 COPY . .
 
-# Build the TypeScript project
-RUN npm run build
+# Build the project (Bun can run TypeScript directly, but tsc is fine too)
+RUN bun run build
 
-# Expose the application port
 EXPOSE 8080
 
-# Start the application using PM2
+# Start with PM2
 CMD ["pm2-runtime", "dist/main.js", "--name", "kiraale-be", "--watch", "--no-daemon"]
