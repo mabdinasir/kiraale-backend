@@ -32,7 +32,8 @@ const addProperty: RequestHandler = async (request, response) => {
             data: {
                 ...propertyData,
                 userId: request.user.id,
-                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                // expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+                expiresAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day from now
                 features: {
                     create: features || {}, // Handle case where features might be undefined
                 },

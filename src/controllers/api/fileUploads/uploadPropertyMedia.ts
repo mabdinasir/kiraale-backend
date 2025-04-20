@@ -20,8 +20,8 @@ const uploadProperties: RequestHandler = async (request, response) => {
     const files = request.files as Express.Multer.File[]
     const propertyId = request.body.propertyId
 
-    if (!files || files.length === 0) {
-        response.status(400).json({ success: false, message: 'No files uploaded' })
+    if (!files || files.length < 4) {
+        response.status(400).json({ success: false, message: 'At least 4 files must be uploaded' })
         return
     }
 
