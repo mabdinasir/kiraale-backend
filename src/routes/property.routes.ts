@@ -8,6 +8,7 @@ import toggleFavoriteProperty from '@controllers/api/property/toggleFavoriteProp
 import getFavoriteProperties from '@controllers/api/property/getFavoriteProperties'
 import getPropertiesByUser from '@controllers/api/property/getPropertiesByUser'
 import { tokenExtractionMiddleware } from '@middleware/tokenExtractionMiddleware'
+import updateProperty from '@controllers/api/property/updateProperty'
 
 const propertyRoutes: RouteGroup = {
     basePath: '/properties',
@@ -54,6 +55,12 @@ const propertyRoutes: RouteGroup = {
             method: 'get',
             middlewares: [authMiddleware],
             handler: getFavoriteProperties,
+        },
+        {
+            path: '/updateProperty/:id',
+            method: 'put',
+            middlewares: [authMiddleware],
+            handler: updateProperty,
         },
     ],
 }

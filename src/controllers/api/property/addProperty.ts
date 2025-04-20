@@ -9,44 +9,32 @@ const addProperty: RequestHandler = async (request, response) => {
         response.status(400).json({
             success: false,
             message: 'Validation failed',
-            errors: validationResult.error.errors.map((err) => `${err.path.join('.')}: ${err.message}`),
+            errors: validationResult.error.errors.map((err) => ({
+                field: err.path.join('.'),
+                message: err.message,
+            })),
         })
         return
     }
 
-    const propertyData = validationResult.data
+    const { features, ...propertyData } = validationResult.data
 
     try {
-        if (!request.user || !request.user.id) {
-            response.status(401).json({ success: false, message: 'Unauthorized: User not found in context' })
+        if (!request.user?.id) {
+            response.status(401).json({
+                success: false,
+                message: 'Unauthorized: User not found in context',
+            })
             return
         }
 
         const newProperty = await prisma.property.create({
             data: {
-                title: propertyData.title,
-                description: propertyData.description,
-                address: propertyData.address,
-                price: propertyData.price,
-                propertyType: propertyData.propertyType,
-                listingType: propertyData.listingType,
+                ...propertyData,
                 userId: request.user.id,
-                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
                 features: {
-                    create: {
-                        bedrooms: propertyData.bedrooms,
-                        bathrooms: propertyData.bathrooms,
-                        parking: propertyData.parking,
-                        area: propertyData.area,
-                        yearBuilt: propertyData.yearBuilt,
-                        pool: propertyData.pool,
-                        furnished: propertyData.furnished,
-                        dishwasher: propertyData.dishwasher,
-                        airConditioning: propertyData.airConditioning,
-                        laundry: propertyData.laundry,
-                        wardrobe: propertyData.wardrobe,
-                        oven: propertyData.oven,
-                    },
+                    create: features || {}, // Handle case where features might be undefined
                 },
             },
             include: {

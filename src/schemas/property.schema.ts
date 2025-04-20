@@ -1,20 +1,13 @@
 import { z } from 'zod'
 
-export const propertySchema = z.object({
-    title: z.string().min(3, 'Title must be at least 3 characters'),
-    description: z.string().optional(),
-    address: z.string().min(5, 'Address must be at least 5 characters'),
-    price: z.number().min(1, 'Price must be a positive number'),
-    listingType: z.enum(['SALE', 'RENT']),
-    propertyType: z.enum(['RESIDENTIAL', 'COMMERCIAL', 'LAND']),
-    status: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'EXPIRED']).optional(),
-    approvedAt: z.date().optional(),
-    expiresAt: z.date().optional(),
-    approvedBy: z.string().optional(),
-    bedrooms: z.number().optional(),
-    bathrooms: z.number().optional(),
-    parking: z.number().optional(),
-    area: z.number().optional(),
+const propertyStatusEnum = z.enum(['PENDING', 'REJECTED', 'EXPIRED', 'AVAILABLE', 'SOLD', 'LEASED'])
+
+// Features schema (for the separate features table)
+export const propertyFeaturesSchema = z.object({
+    bedrooms: z.number().min(0, 'Bedrooms must be a positive number').optional(),
+    bathrooms: z.number().min(0, 'Bathrooms must be a positive number').optional(),
+    parking: z.number().min(0, 'Parking must be a positive number').optional(),
+    area: z.number().min(0, 'Area must be a positive number').optional(),
     yearBuilt: z
         .number()
         .int()
@@ -30,6 +23,22 @@ export const propertySchema = z.object({
     oven: z.boolean().optional(),
 })
 
+// Main property schema
+export const propertySchema = z.object({
+    title: z.string().min(3, 'Title must be at least 3 characters'),
+    description: z.string().optional(),
+    address: z.string().min(5, 'Address must be at least 5 characters'),
+    price: z.number().min(1, 'Price must be a positive number'),
+    listingType: z.enum(['SALE', 'RENT']),
+    propertyType: z.enum(['RESIDENTIAL', 'COMMERCIAL', 'LAND']),
+    status: propertyStatusEnum.optional(),
+    approvedAt: z.string().datetime().optional().nullable(),
+    expiresAt: z.string().datetime().optional().nullable(),
+    approvedBy: z.string().optional().nullable(),
+    features: propertyFeaturesSchema.optional(), // Nested features
+})
+
+// Search query schema
 export const propertySearchQuerySchema = z.object({
     query: z.string().optional(),
     minPrice: z
