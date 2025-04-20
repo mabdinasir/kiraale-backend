@@ -7,7 +7,7 @@ import mediaRoutes from './media.routes'
 import paymentRoutes from './payment.routes'
 import subscriberRoutes from './subscriber.routes'
 import contactRoutes from './contact.routes'
-import fileUploadsRoutes from './fileUploads'
+import fileUploadsRoutes from './fileUploads.routes'
 
 const registerRouteGroups = (router: Router, groups: RouteGroup[]) => {
     groups.forEach((group) => {

@@ -1,5 +1,6 @@
+import deletePropertyMedia from '@controllers/api/fileUploads/deletePropertyMedia'
 import uploadProfilePic from '@controllers/api/fileUploads/uploadProfilePic'
-import uploadProperties from '@controllers/api/fileUploads/uploadProperties'
+import uploadPropertyMedia from '@controllers/api/fileUploads/uploadPropertyMedia'
 import { authMiddleware } from '@middleware/authMiddleware'
 import type { RouteGroup } from '@models/routes'
 
@@ -13,10 +14,16 @@ const fileUploadsRoutes: RouteGroup = {
             handler: uploadProfilePic,
         },
         {
-            path: '/uploadProperties',
+            path: '/uploadPropertyMedia',
             method: 'post',
             middlewares: [authMiddleware],
-            handler: uploadProperties,
+            handler: uploadPropertyMedia,
+        },
+        {
+            path: '/deletePropertyMedia',
+            method: 'delete',
+            middlewares: [authMiddleware],
+            handler: deletePropertyMedia,
         },
     ],
 }

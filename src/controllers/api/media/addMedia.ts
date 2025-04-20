@@ -22,11 +22,12 @@ const addMedia: RequestHandler = async (request, response) => {
     try {
         // Check if the property exists
         const property = await prisma.property.findUnique({
-            where: { id: media.propertyId }, // No need for optional chaining
+            where: { id: media.propertyId },
         })
 
         if (!property) {
             response.status(404).json({ success: false, message: 'Property not found.' })
+            return
         }
 
         // Create the new media
