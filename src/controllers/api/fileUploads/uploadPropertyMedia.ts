@@ -20,8 +20,8 @@ const uploadProperties: RequestHandler = async (request, response) => {
     const files = request.files as Express.Multer.File[]
     const propertyId = request.body.propertyId
 
-    if (!files || files.length < 4) {
-        response.status(400).json({ success: false, message: 'At least 4 files must be uploaded' })
+    if (!files || files.length === 0) {
+        response.status(400).json({ success: false, message: 'At least 1 file must be uploaded' })
         return
     }
 
@@ -31,6 +31,29 @@ const uploadProperties: RequestHandler = async (request, response) => {
     }
 
     try {
+        // Check if this is the first upload
+        const existingMediaCount = await prisma.media.count({
+            where: { propertyId },
+        })
+
+        const isFirstUpload = existingMediaCount === 0
+
+        if (isFirstUpload && files.length < 4) {
+            response.status(400).json({
+                success: false,
+                message: 'First-time uploads must include at least 4 images',
+            })
+            return
+        }
+
+        if (!isFirstUpload && files.length < 1) {
+            response.status(400).json({
+                success: false,
+                message: 'At least one image is required to add more media',
+            })
+            return
+        }
+
         // Initialize S3 client
         const s3Client = new S3Client({
             region: process.env.AWS_BUCKET_REGION,
@@ -43,10 +66,8 @@ const uploadProperties: RequestHandler = async (request, response) => {
         const uploadedUrls: string[] = []
 
         const uploadPromises = files.map(async (file) => {
-            // Compute file checksum
             const checksum = await computeSHA256(file)
 
-            // Validate file details using Zod schema
             const validatedData = propertyUploadSchema.parse({
                 fileType: file.mimetype,
                 fileSize: file.size,
@@ -54,22 +75,21 @@ const uploadProperties: RequestHandler = async (request, response) => {
                 propertyId,
             })
 
-            // Generate unique filename
             const fileName = `${validatedData.checksum}-${Date.now()}`
 
-            // Create S3 upload command
             const putCommand = new PutObjectCommand({
                 Bucket: process.env.PROPERTIES_BUCKET_NAME!,
                 Key: fileName,
                 ContentType: file.mimetype,
                 ContentLength: file.size,
-                Metadata: { checksum: validatedData.checksum, userId: userId || '' },
+                Metadata: {
+                    checksum: validatedData.checksum,
+                    userId: userId || '',
+                },
             })
 
-            // Generate signed URL
             const signedUrl = await getSignedUrl(s3Client, putCommand, { expiresIn: 3600 })
 
-            // Upload to S3
             const uploadResponse = await fetch(signedUrl, {
                 method: 'PUT',
                 body: file.buffer,
@@ -80,30 +100,41 @@ const uploadProperties: RequestHandler = async (request, response) => {
                 throw new Error('S3 upload failed')
             }
 
-            // Get permanent URL (strip query parameters from the signed URL)
             const mediaUrl = signedUrl.split('?')[0]
             uploadedUrls.push(mediaUrl)
 
-            // Update property record in the database for each file
             await prisma.media.create({
                 data: {
                     url: mediaUrl,
                     type: file.mimetype === 'video/mp4' ? 'VIDEO' : 'IMAGE',
-                    property: { connect: { id: propertyId } },
+                    property: {
+                        connect: { id: propertyId },
+                    },
                 },
             })
         })
 
         await Promise.all(uploadPromises)
 
-        response.status(200).json({ success: true, propertyPictures: uploadedUrls })
+        response.status(200).json({
+            success: true,
+            propertyPictures: uploadedUrls,
+            isFirstUpload,
+            totalMediaCount: existingMediaCount + uploadedUrls.length,
+        })
     } catch (error) {
         if (error instanceof z.ZodError) {
-            response.status(400).json({ success: false, error: 'Validation failed', details: error.errors })
-            return
+            response.status(400).json({
+                success: false,
+                error: 'Validation failed',
+                details: error.errors,
+            })
         }
 
-        response.status(500).json({ success: false, error: `Internal error occurred: ${(error as Error).message}` })
+        response.status(500).json({
+            success: false,
+            error: `Internal error occurred: ${(error as Error).message}`,
+        })
     }
 }
 
