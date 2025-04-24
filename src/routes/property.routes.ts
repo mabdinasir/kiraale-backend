@@ -9,6 +9,8 @@ import getFavoriteProperties from '@controllers/api/property/getFavoriteProperti
 import getPropertiesByUser from '@controllers/api/property/getPropertiesByUser'
 import { tokenExtractionMiddleware } from '@middleware/tokenExtractionMiddleware'
 import updateProperty from '@controllers/api/property/updateProperty'
+import getPendingProperties from '@controllers/api/property/getPendingProperties'
+import getRejectedProperties from '@controllers/api/property/getRejectedProperties'
 
 const propertyRoutes: RouteGroup = {
     basePath: '/properties',
@@ -61,6 +63,18 @@ const propertyRoutes: RouteGroup = {
             method: 'put',
             middlewares: [authMiddleware],
             handler: updateProperty,
+        },
+        {
+            path: '/getPendingProperties',
+            method: 'get',
+            middlewares: [authMiddleware],
+            handler: getPendingProperties,
+        },
+        {
+            path: '/getRejectedProperties',
+            method: 'get',
+            middlewares: [authMiddleware],
+            handler: getRejectedProperties,
         },
     ],
 }
