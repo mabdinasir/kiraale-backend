@@ -23,7 +23,10 @@ CREATE TYPE "ListingType" AS ENUM ('SALE', 'RENT');
 CREATE TYPE "PropertyStatus" AS ENUM ('PENDING', 'REJECTED', 'EXPIRED', 'AVAILABLE', 'LEASED', 'SOLD');
 
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('USER', 'MODERATOR', 'AGENT');
+CREATE TYPE "Country" AS ENUM ('SOMALIA', 'KENYA');
+
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('USER', 'MODERATOR', 'AGENT', 'ADMIN');
 
 -- CreateTable
 CREATE TABLE "Contact" (
@@ -70,12 +73,14 @@ CREATE TABLE "Payment" (
 -- CreateTable
 CREATE TABLE "Property" (
     "id" TEXT NOT NULL,
+    "country" "Country" NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
     "address" TEXT NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedBy" TEXT,
     "listingType" "ListingType" NOT NULL DEFAULT 'SALE',
     "status" "PropertyStatus" NOT NULL DEFAULT 'PENDING',
     "approvedAt" TIMESTAMP(3),
@@ -112,6 +117,9 @@ CREATE TABLE "Media" (
     "id" TEXT NOT NULL,
     "url" TEXT NOT NULL,
     "type" "MediaType" NOT NULL,
+    "uploadedBy" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
     "propertyId" TEXT NOT NULL,
 
     CONSTRAINT "Media_pkey" PRIMARY KEY ("id")
@@ -142,6 +150,7 @@ CREATE TABLE "Subscriber" (
 CREATE TABLE "TokenBlacklist" (
     "id" TEXT NOT NULL,
     "token" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "TokenBlacklist_pkey" PRIMARY KEY ("id")
 );

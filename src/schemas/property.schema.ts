@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-const propertyStatusEnum = z.enum(['PENDING', 'REJECTED', 'EXPIRED', 'AVAILABLE', 'SOLD', 'LEASED'])
-
 // Features schema (for the separate features table)
 export const propertyFeaturesSchema = z.object({
     bedrooms: z.number().min(0, 'Bedrooms must be a positive number').optional(),
@@ -25,21 +23,27 @@ export const propertyFeaturesSchema = z.object({
 
 // Main property schema
 export const propertySchema = z.object({
+    country: z.enum(['SOMALIA', 'KENYA'], {
+        errorMap: () => ({ message: 'Country must be either Somalia or Kenya' }),
+    }),
     title: z.string().min(3, 'Title must be at least 3 characters'),
     description: z.string().optional(),
     address: z.string().min(5, 'Address must be at least 5 characters'),
     price: z.number().min(1, 'Price must be a positive number'),
-    listingType: z.enum(['SALE', 'RENT']),
-    propertyType: z.enum(['RESIDENTIAL', 'COMMERCIAL', 'LAND']),
-    status: propertyStatusEnum.optional(),
-    approvedAt: z.string().datetime().optional().nullable(),
-    expiresAt: z.string().datetime().optional().nullable(),
-    approvedBy: z.string().optional().nullable(),
+    listingType: z.enum(['SALE', 'RENT'], {
+        errorMap: () => ({ message: 'Listing type must be either Sale or Rent' }),
+    }),
+    propertyType: z.enum(['RESIDENTIAL', 'COMMERCIAL', 'LAND'], {
+        errorMap: () => ({ message: 'Property type must be either Residential, Commercial, or Land' }),
+    }),
     features: propertyFeaturesSchema.optional(), // Nested features
 })
 
 // Search query schema
 export const propertySearchQuerySchema = z.object({
+    country: z.enum(['SOMALIA', 'KENYA'], {
+        errorMap: () => ({ message: 'Country must be either Somalia or Kenya' }),
+    }),
     query: z.string().optional(),
     minPrice: z
         .string()

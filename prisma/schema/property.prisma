@@ -1,11 +1,13 @@
 model Property {
     id                 String               @id @default(uuid())
+    country            Country              
     title              String
     description        String?
     address            String
     price              Float
     createdAt          DateTime             @default(now())
     updatedAt          DateTime             @updatedAt
+    updatedBy          String?       
     listingType        ListingType          @default(SALE)
     status             PropertyStatus       @default(PENDING)
     approvedAt         DateTime?
@@ -42,6 +44,9 @@ model Media {
     id         String    @id @default(uuid())
     url        String
     type       MediaType
+    uploadedBy String
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime?  @updatedAt
     propertyId String
     property   Property  @relation(fields: [propertyId], references: [id])
 }
@@ -69,4 +74,9 @@ enum PropertyStatus {
     AVAILABLE
     LEASED
     SOLD
+}
+
+enum Country {
+    SOMALIA
+    KENYA
 }

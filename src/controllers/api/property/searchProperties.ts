@@ -15,7 +15,7 @@ const searchProperties: RequestHandler = async (request, response) => {
         return
     }
 
-    const { query, minPrice, maxPrice, propertyType, listingType } = result.data
+    const { query, minPrice, maxPrice, propertyType, listingType, country } = result.data
 
     const userId = request.user?.id
 
@@ -25,6 +25,7 @@ const searchProperties: RequestHandler = async (request, response) => {
                 p.*,
                 to_json(f) AS features,
                 json_build_object( -- 👤 Select only specific user fields
+                    'id', u.id,
                     'firstName', u."firstName",
                     'lastName', u."lastName",
                     'mobile', u."mobile",
@@ -42,7 +43,9 @@ const searchProperties: RequestHandler = async (request, response) => {
             LEFT JOIN "Media" m ON p.id = m."propertyId"
             LEFT JOIN "User" u ON p."userId" = u.id 
             WHERE 
-                (${query} IS NULL OR similarity(p.title, ${query}) > 0.2 
+                p.country = ${country}::"Country"
+                AND (${query}::TEXT IS NULL OR ${query} = '' OR
+                similarity(p.title, ${query}) > 0.2 
                 OR similarity(p.description, ${query}) > 0.1 
                 OR similarity(p.address, ${query}) > 0.2)
                 AND (${minPrice}::NUMERIC IS NULL OR p.price >= ${minPrice}::NUMERIC)

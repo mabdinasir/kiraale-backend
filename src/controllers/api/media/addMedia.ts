@@ -3,6 +3,12 @@ import type { RequestHandler } from 'express'
 import { mediaSchema } from '@schemas/index'
 
 const addMedia: RequestHandler = async (request, response) => {
+    const userId = request.user?.id
+    if (!userId) {
+        response.status(401).json({ success: false, message: 'Unauthorized, please sign in first!' })
+        return
+    }
+
     // Validate the request body
     const validationResult = mediaSchema.safeParse(request.body)
 
@@ -35,6 +41,7 @@ const addMedia: RequestHandler = async (request, response) => {
             data: {
                 url: media.url,
                 type: media.type,
+                uploadedBy: userId,
                 property: { connect: { id: media.propertyId } },
             },
         })

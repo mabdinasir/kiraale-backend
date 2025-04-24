@@ -22,7 +22,7 @@ const getPaymentByPropertyId: RequestHandler = async (request, response) => {
         const payment = await prisma.payment.findFirst({
             where: { propertyId },
             include: {
-                user: { select: { firstName: true, lastName: true, email: true, mobile: true } },
+                user: { select: { id: true, firstName: true, lastName: true, email: true, mobile: true } },
                 property: true,
             },
         })

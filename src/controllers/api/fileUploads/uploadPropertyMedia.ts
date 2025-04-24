@@ -107,6 +107,7 @@ const uploadProperties: RequestHandler = async (request, response) => {
                 data: {
                     url: mediaUrl,
                     type: file.mimetype === 'video/mp4' ? 'VIDEO' : 'IMAGE',
+                    uploadedBy: userId,
                     property: {
                         connect: { id: propertyId },
                     },

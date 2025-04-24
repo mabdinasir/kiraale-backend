@@ -64,10 +64,8 @@ const updateProperty: RequestHandler = async (request, response) => {
                 where: { id: propertyId },
                 data: {
                     ...propertyData,
-                    status: propertyData.status ?? existingProperty.status,
-                    approvedAt: propertyData.approvedAt ?? existingProperty.approvedAt,
-                    expiresAt: propertyData.expiresAt ?? existingProperty.expiresAt,
-                    approvedBy: propertyData.approvedBy ?? existingProperty.approvedBy,
+                    status: 'PENDING',
+                    updatedBy: request.user.id,
                 },
             }),
             prisma.features.update({
