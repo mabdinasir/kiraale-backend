@@ -11,6 +11,8 @@ import { tokenExtractionMiddleware } from '@middleware/tokenExtractionMiddleware
 import updateProperty from '@controllers/api/property/updateProperty'
 import getPendingProperties from '@controllers/api/property/getPendingProperties'
 import getRejectedProperties from '@controllers/api/property/getRejectedProperties'
+import updatePropertyStatus from '@controllers/api/property/updatePropertyStatus'
+import softDeleteProperty from '@controllers/api/property/softDeleteProperty'
 
 const propertyRoutes: RouteGroup = {
     basePath: '/properties',
@@ -75,6 +77,18 @@ const propertyRoutes: RouteGroup = {
             method: 'get',
             middlewares: [authMiddleware],
             handler: getRejectedProperties,
+        },
+        {
+            path: '/updatePropertyStatus',
+            method: 'put',
+            middlewares: [authMiddleware],
+            handler: updatePropertyStatus,
+        },
+        {
+            path: '/softDeleteProperty/:id',
+            method: 'delete',
+            middlewares: [authMiddleware],
+            handler: softDeleteProperty,
         },
     ],
 }

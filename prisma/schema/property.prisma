@@ -5,14 +5,19 @@ model Property {
     description        String?
     address            String
     price              Float
+    isDeleted          Boolean              @default(false)
     createdAt          DateTime             @default(now())
     updatedAt          DateTime             @updatedAt
     updatedBy          String?       
     listingType        ListingType          @default(SALE)
     status             PropertyStatus       @default(PENDING)
-    approvedAt         DateTime?
     expiresAt          DateTime?
+    approvedAt         DateTime?
     approvedBy         String?
+    rejectedAt         DateTime?
+    rejectedBy         String?
+    deletedAt         DateTime?
+    deletedBy         String?
     propertyType       PropertyType
     userId             String
     favoriteProperties FavoriteProperties[]
