@@ -1,5 +1,5 @@
-import { hashPassword } from '@lib/hashPassword'
-import { prisma } from '@lib/utils/prismaClient'
+import { hashPassword } from '@lib/utils/security/hashPassword'
+import { prisma } from '@lib/prismaClient'
 import { resetPasswordSchema } from '@schemas/auth.schema'
 import type { RequestHandler } from 'express'
 

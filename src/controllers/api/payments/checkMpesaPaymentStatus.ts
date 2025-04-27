@@ -1,4 +1,4 @@
-import { prisma } from '@lib/utils/prismaClient'
+import { prisma } from '@lib/prismaClient'
 import type { RequestHandler } from 'express'
 
 const checkMpesaPaymentStatus: RequestHandler = async (req, res) => {

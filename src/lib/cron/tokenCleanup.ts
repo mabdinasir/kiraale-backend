@@ -1,5 +1,5 @@
 import cron from 'node-cron'
-import { cleanupExpiredTokens } from '../utils/tokenCleanup'
+import { cleanupExpiredTokens } from '../utils/security/tokenCleanup'
 
 // Run daily at 2 AM
 export const setupTokenCleanupCron = () => {

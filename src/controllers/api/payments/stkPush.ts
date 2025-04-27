@@ -1,12 +1,12 @@
 import axios from 'axios'
-import { timestamp } from '@utils/timeStamp'
+import { timestamp } from '@lib/utils/formatters/date/timeStamp'
 import type { RequestHandler } from 'express'
 import { StkPushSchema } from '@schemas/index'
 import dotenv from 'dotenv'
-import { formatKenyanNumber } from '@lib/formatKenyanNumber'
+import { formatKenyanNumber } from '@lib/utils/formatters/phoneNumbers/formatKenyanNumber'
 import { mpesaAmount } from '@lib/config'
-import { prisma } from '@lib/utils/prismaClient'
-import generateReceiptNumber from '@lib/generateReceiptNumber'
+import { prisma } from '@lib/prismaClient'
+import generateReceiptNumber from '@lib/utils/generators/generateReceiptNumber'
 dotenv.config()
 
 const handleStkPush: RequestHandler = async (request, response) => {

@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express'
 import { authorizationSchema } from '@schemas/index'
-import { verifyJwtToken } from '@lib/generateJwtToken'
+import { verifyJwtToken } from '@lib/utils/auth/generateJwtToken'
 
 export const tokenExtractionMiddleware: RequestHandler = (request, response, next) => {
     try {

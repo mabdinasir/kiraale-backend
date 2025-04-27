@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express'
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3'
-import { prisma } from '@lib/utils/prismaClient'
+import { prisma } from '@lib/prismaClient'
 import { z } from 'zod'
 
 const s3Client = new S3Client({

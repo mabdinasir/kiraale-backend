@@ -1,4 +1,4 @@
-import { prisma } from '@lib/utils/prismaClient'
+import { prisma } from '@lib/prismaClient'
 import type { RequestHandler } from 'express'
 import { z } from 'zod'
 

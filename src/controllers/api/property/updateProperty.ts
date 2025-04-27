@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-import { prisma } from '@lib/utils/prismaClient'
+import { prisma } from '@lib/prismaClient'
 import { propertySchema } from '@schemas/index'
 
 const updateProperty: RequestHandler = async (request, response) => {

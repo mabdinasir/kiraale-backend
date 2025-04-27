@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { StkPushCallbackSchema } from '@schemas/payment.schema'
-import { prisma } from '@lib/utils/prismaClient'
+import { prisma } from '@lib/prismaClient'
 
 const handleMpesaCallback = async (req: Request, res: Response) => {
     try {

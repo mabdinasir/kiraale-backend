@@ -1,6 +1,6 @@
 // src/cron/expireProperties.ts
 import cron from 'node-cron'
-import { prisma } from '../utils/prismaClient'
+import { prisma } from '../prismaClient'
 
 export const setupPropertyExpirationCron = () => {
     // Run daily at midnight

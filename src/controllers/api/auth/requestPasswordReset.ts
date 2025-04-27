@@ -1,9 +1,9 @@
 import { resetPasswordTemplate } from '@lib/emailTemplates/resetPasswordTemplate'
-import { generateJwtToken } from '@lib/generateJwtToken'
-import { sendEmail } from '@lib/utils/nodeMailer'
-import { prisma } from '@lib/utils/prismaClient'
+import { sendEmail } from '@lib/utils/email/nodeMailer'
+import { prisma } from '@lib/prismaClient'
 import type { RequestHandler } from 'express'
 import { z } from 'zod'
+import { generateJwtToken } from '@lib/utils/auth/generateJwtToken'
 
 const requestPasswordReset: RequestHandler = async (req, res) => {
     if (!req.body.email) {

@@ -1,9 +1,9 @@
 import axios from 'axios'
 import type { RequestHandler } from 'express'
-import { prisma } from '@lib/utils/prismaClient'
-import { formatSomaliNumber } from '@lib/formatSomaliNumber'
+import { prisma } from '@lib/prismaClient'
+import { formatSomaliNumber } from '@lib/utils/formatters/phoneNumbers/formatSomaliNumber'
 import { evcPlusAmount } from '@lib/config'
-import generateReceiptNumber from '@lib/generateReceiptNumber'
+import generateReceiptNumber from '@lib/utils/generators/generateReceiptNumber'
 
 interface EvcPlusPurchaseSchema {
     phoneNumber: string

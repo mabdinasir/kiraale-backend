@@ -1,7 +1,7 @@
 import type { RequestHandler } from 'express'
-import { prisma } from '@lib/utils/prismaClient'
+import { prisma } from '@lib/prismaClient'
 import { z } from 'zod'
-import { omitPassword } from '@lib/utils/omitPassword'
+import { omitPassword } from '@lib/utils/security/omitPassword'
 
 const getUserById: RequestHandler = async (request, response) => {
     try {

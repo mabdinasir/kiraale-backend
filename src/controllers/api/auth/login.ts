@@ -1,10 +1,10 @@
 import type { RequestHandler } from 'express'
 import { z } from 'zod'
-import { verifyPassword } from '@lib/hashPassword'
-import { generateJwtToken } from '@lib/generateJwtToken'
+import { verifyPassword } from '@lib/utils/security/hashPassword'
 import { loginSchema } from '@schemas/index'
-import { prisma } from '@lib/utils/prismaClient'
-import { omitPassword } from '@lib/utils/omitPassword'
+import { prisma } from '@lib/prismaClient'
+import { omitPassword } from '@lib/utils/security/omitPassword'
+import { generateJwtToken } from '@lib/utils/auth/generateJwtToken'
 
 const login: RequestHandler = async (request, response) => {
     try {

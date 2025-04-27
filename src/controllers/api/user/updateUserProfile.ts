@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express'
-import { prisma } from '@utils/prismaClient'
-import { omitPassword } from '@lib/utils/omitPassword'
+import { prisma } from '@lib/prismaClient'
+import { omitPassword } from '@lib/utils/security/omitPassword'
 import { profileSchema } from '@schemas/index'
 import { z } from 'zod'
 

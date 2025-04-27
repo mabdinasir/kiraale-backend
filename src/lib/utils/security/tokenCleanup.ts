@@ -1,4 +1,4 @@
-import { prisma } from './prismaClient'
+import { prisma } from '../../prismaClient'
 
 export const cleanupExpiredTokens = async () => {
     // Calculate date 30 days ago

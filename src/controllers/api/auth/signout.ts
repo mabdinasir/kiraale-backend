@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-import { prisma } from '@lib/utils/prismaClient'
+import { prisma } from '@lib/prismaClient'
 
 const signOut: RequestHandler = async (request, response) => {
     try {

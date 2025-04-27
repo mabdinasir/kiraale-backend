@@ -1,12 +1,12 @@
 /* eslint-disable callback-return */
 /* eslint-disable require-atomic-updates */
 import type { RequestHandler } from 'express'
-import { verifyJwtToken } from '@lib/generateJwtToken'
-import { prisma } from '@lib/utils/prismaClient'
+import { prisma } from '@lib/prismaClient'
 import { authorizationSchema } from '@schemas/index'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import dotenv from 'dotenv'
+import { verifyJwtToken } from '@lib/utils/auth/generateJwtToken'
 
 dotenv.config()
 

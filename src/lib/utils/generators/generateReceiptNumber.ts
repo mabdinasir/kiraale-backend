@@ -1,4 +1,4 @@
-import { prisma } from './utils/prismaClient'
+import { prisma } from '../../prismaClient'
 
 const generateReceiptNumber = async (): Promise<string> => {
     const lastPayment = await prisma.payment.findFirst({
