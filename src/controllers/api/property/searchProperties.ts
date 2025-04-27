@@ -1,6 +1,7 @@
 import type { RequestHandler } from 'express'
 import { prisma } from '@lib/utils/prismaClient'
 import { propertySearchQuerySchema } from '@schemas/index'
+import { Property } from '@prisma/client'
 
 const searchProperties: RequestHandler = async (request, response) => {
     // Validate query parameters
@@ -20,7 +21,7 @@ const searchProperties: RequestHandler = async (request, response) => {
     const userId = request.user?.id
 
     try {
-        const properties = await prisma.$queryRaw`
+        const properties = await prisma.$queryRaw<Property[]>`
             SELECT 
                 p.*,
                 to_json(f) AS features,
@@ -53,6 +54,7 @@ const searchProperties: RequestHandler = async (request, response) => {
                 AND (${propertyType}::TEXT IS NULL OR p."propertyType" = ${propertyType}::"PropertyType")
                 AND (${listingType}::TEXT IS NULL OR p."listingType" = ${listingType}::"ListingType")
                 AND p.status NOT IN ('PENDING', 'REJECTED', 'EXPIRED')
+                AND p."isDeleted" = false
             GROUP BY p.id, f.id, u.id
             ORDER BY GREATEST(
                 similarity(p.title, COALESCE(${query}, '')), 
@@ -60,6 +62,14 @@ const searchProperties: RequestHandler = async (request, response) => {
                 similarity(p.address, COALESCE(${query}, ''))
             ) DESC
         `
+
+        if (!properties || properties.length === 0) {
+            response.status(404).json({
+                success: false,
+                message: 'No properties found.',
+            })
+            return
+        }
 
         response.status(200).json({
             success: true,

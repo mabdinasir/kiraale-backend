@@ -33,6 +33,14 @@ const softDeleteProperty: RequestHandler = async (request, response) => {
             return
         }
 
+        if (property.isDeleted) {
+            response.status(400).json({
+                success: false,
+                message: 'Property is already marked as deleted.',
+            })
+            return
+        }
+
         // Update property status to mark as deleted
         const updatedProperty = await prisma.property.update({
             where: { id },

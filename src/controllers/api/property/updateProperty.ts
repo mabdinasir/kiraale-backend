@@ -39,7 +39,7 @@ const updateProperty: RequestHandler = async (request, response) => {
 
         // Verify property exists and belongs to user
         const existingProperty = await prisma.property.findUnique({
-            where: { id: propertyId },
+            where: { id: propertyId, isDeleted: false },
             include: { features: true },
         })
 

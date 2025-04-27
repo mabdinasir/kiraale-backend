@@ -26,11 +26,21 @@ const updatePropertyStatus: RequestHandler = async (request, response) => {
     try {
         // Check if property exists
         const property = await prisma.property.findUnique({
-            where: { id: propertyId },
+            where: { id: propertyId, isDeleted: false },
         })
 
         if (!property) {
             response.status(404).json({ success: false, message: 'Property not found.' })
+            return
+        }
+
+        // if property status is already set to the same value, return early
+        if (property.status === status) {
+            response.status(200).json({
+                success: true,
+                message: 'Property status is already set to the requested value.',
+                property,
+            })
             return
         }
 

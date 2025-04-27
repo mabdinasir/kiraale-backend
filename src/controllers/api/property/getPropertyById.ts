@@ -22,7 +22,7 @@ const getPropertyById: RequestHandler = async (request, response) => {
         const userId = request.user?.id || null // Get the logged-in user's ID, or null if not logged in
 
         const property = await prisma.property.findUnique({
-            where: { id },
+            where: { id, isDeleted: false },
             include: {
                 features: true,
                 media: true,

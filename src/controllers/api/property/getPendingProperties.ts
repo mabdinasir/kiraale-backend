@@ -16,7 +16,10 @@ const getPendingProperties: RequestHandler = async (request, response) => {
 
         const properties = await prisma.property.findMany({
             where: {
-                status: 'PENDING',
+                status: {
+                    in: ['PENDING', 'SOLD'],
+                },
+                isDeleted: false,
             },
             include: {
                 features: true,

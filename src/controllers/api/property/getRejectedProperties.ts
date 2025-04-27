@@ -17,6 +17,7 @@ const getRejectedProperties: RequestHandler = async (request, response) => {
         const properties = await prisma.property.findMany({
             where: {
                 status: 'REJECTED',
+                isDeleted: false,
             },
             include: {
                 features: true,

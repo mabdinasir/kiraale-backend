@@ -17,7 +17,7 @@ const toggleFavoriteProperty: RequestHandler = async (request, response) => {
 
         // Check if the property exists
         const property = await prisma.property.findUnique({
-            where: { id: propertyId },
+            where: { id: propertyId, isDeleted: false },
         })
 
         if (!property) {

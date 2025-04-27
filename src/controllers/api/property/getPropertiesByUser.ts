@@ -33,7 +33,10 @@ const getPropertiesByUser: RequestHandler = async (request, response) => {
 
         // Fetch properties by user ID
         const properties = await prisma.property.findMany({
-            where: { userId },
+            where: {
+                userId,
+                isDeleted: false,
+            },
             include: {
                 features: true,
                 media: true,
@@ -65,6 +68,14 @@ const getPropertiesByUser: RequestHandler = async (request, response) => {
                 }
             }),
         )
+
+        if (!propertiesWithFavoritedStatus.length) {
+            response.status(404).json({
+                success: false,
+                message: 'No properties found for this user.',
+            })
+            return
+        }
 
         response.status(200).json({ success: true, properties: propertiesWithFavoritedStatus })
     } catch (error) {
