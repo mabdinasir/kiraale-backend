@@ -104,7 +104,7 @@ export const resetPasswordTemplate = (resetUrl: string, userName?: string) => ({
         <div class="container">
             <div class="card">
                 <div class="header">
-                    <img src="https://kiraale.com/images/logo.png" alt="Kiraale Logo" class="logo">
+                    <img src="https://kiraale-properties-bucket.s3.ap-southeast-2.amazonaws.com/logo-icon-80-name.png" alt="Kiraale Logo" class="logo">
                     <h1>Password Reset</h1>
                 </div>
 
