@@ -69,14 +69,6 @@ const getPropertiesByUser: RequestHandler = async (request, response) => {
             }),
         )
 
-        if (!propertiesWithFavoritedStatus.length) {
-            response.status(404).json({
-                success: false,
-                message: 'No properties found for this user.',
-            })
-            return
-        }
-
         response.status(200).json({ success: true, properties: propertiesWithFavoritedStatus })
     } catch (error) {
         response.status(500).json({

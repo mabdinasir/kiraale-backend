@@ -34,14 +34,6 @@ const getRejectedProperties: RequestHandler = async (request, response) => {
             },
         })
 
-        if (!properties.length) {
-            response.status(404).json({
-                success: false,
-                message: 'No rejected properties found.',
-            })
-            return
-        }
-
         response.status(200).json({
             success: true,
             properties,

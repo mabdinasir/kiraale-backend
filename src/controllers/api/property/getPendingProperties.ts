@@ -36,14 +36,6 @@ const getPendingProperties: RequestHandler = async (request, response) => {
             },
         })
 
-        if (!properties.length) {
-            response.status(404).json({
-                success: false,
-                message: 'No pending properties found.',
-            })
-            return
-        }
-
         response.status(200).json({
             success: true,
             properties,

@@ -48,14 +48,6 @@ const getFeaturedProperties: RequestHandler = async (request, response) => {
             }),
         )
 
-        if (!propertiesWithFavoritedStatus.length) {
-            response.status(404).json({
-                success: false,
-                message: 'No featured properties found.',
-            })
-            return
-        }
-
         response.status(200).json({
             success: true,
             properties: propertiesWithFavoritedStatus,
