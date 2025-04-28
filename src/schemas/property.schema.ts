@@ -2,8 +2,10 @@ import { z } from 'zod'
 
 // Features schema (for the separate features table)
 export const propertyFeaturesSchema = z.object({
-    bedrooms: z.number().min(0, 'Bedrooms must be a positive number').optional(),
-    bathrooms: z.number().min(0, 'Bathrooms must be a positive number').optional(),
+    bedroom: z.number().min(0, 'Bedroom must be a positive number').optional(),
+    livingRoom: z.number().min(0, 'Living room must be a positive number').optional(),
+    bathroom: z.number().min(0, 'Bathroom must be a positive number').optional(),
+    kitchen: z.number().min(0, 'Kitchen must be a positive number').optional(),
     parking: z.number().min(0, 'Parking must be a positive number').optional(),
     area: z.number().min(0, 'Area must be a positive number').optional(),
     yearBuilt: z

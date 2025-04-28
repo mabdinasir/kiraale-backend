@@ -25,12 +25,15 @@ model Property {
     media              Media[]
     user               User                 @relation(fields: [userId], references: [id])
     payments           Payment[]
+    comments           Comment[]
 }
 
 model Features {
     id              String   @id @default(uuid())
-    bedrooms        Int?
-    bathrooms       Int?
+    bedroom         Int?
+    livingRoom      Int?
+    bathroom        Int?
+    kitchen         Int?
     parking         Int?
     area            Float?
     pool            Boolean?
@@ -55,6 +58,22 @@ model Media {
     propertyId String
     property   Property  @relation(fields: [propertyId], references: [id])
 }
+
+model Comment {
+    id          String    @id @default(uuid())
+    content     String
+    isDeleted   Boolean   @default(false)
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    deletedAt   DateTime?
+    deletedBy   String?
+    userId      String
+    propertyId  String
+
+    user        User      @relation(fields: [userId], references: [id])
+    property    Property  @relation(fields: [propertyId], references: [id])
+}
+
 
 enum MediaType {
     IMAGE
