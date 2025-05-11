@@ -13,6 +13,7 @@ import getPendingProperties from '@controllers/api/property/getPendingProperties
 import getRejectedProperties from '@controllers/api/property/getRejectedProperties'
 import updatePropertyStatus from '@controllers/api/property/updatePropertyStatus'
 import softDeleteProperty from '@controllers/api/property/softDeleteProperty'
+import aiPropertySearch from '@controllers/api/property/aiPropertySearch'
 
 const propertyRoutes: RouteGroup = {
     basePath: '/properties',
@@ -89,6 +90,12 @@ const propertyRoutes: RouteGroup = {
             method: 'delete',
             middlewares: [authMiddleware],
             handler: softDeleteProperty,
+        },
+        {
+            path: '/aiPropertySearch',
+            method: 'post',
+            middlewares: [authMiddleware],
+            handler: aiPropertySearch,
         },
     ],
 }
