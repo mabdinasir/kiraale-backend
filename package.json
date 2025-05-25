@@ -7,7 +7,7 @@
         "node": "22.x"
     },
     "prisma": {
-        "schema": "./prisma/schema.prisma"
+        "schema": "./prisma/schema/schema.prisma"
     },
     "type": "module",
     "version": "1.0.0",
