@@ -13,11 +13,13 @@ COPY prisma ./prisma/
 # Install dependencies
 RUN bun install --frozen-lockfile
 
+# Copy app
+COPY . .
+
 # Generate Prisma Client
 RUN bunx prisma generate
 
-# Copy app and build
-COPY . .
+# Build the application
 RUN bun run build
 
 # Use PM2 to run App
