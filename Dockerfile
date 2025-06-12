@@ -2,24 +2,24 @@ FROM oven/bun:1.1-alpine
 
 WORKDIR /app
 
-# Install PM2 globally using npm
+# 1. Install system dependencies
 RUN apk add --no-cache nodejs npm && \
     npm install -g pm2
 
-# Copy dependency files
+# 2. Copy dependency files first (for better caching)
 COPY package.json bun.lockb ./
 
-# Install dependencies
-RUN bun install --frozen-lockfile
+# 3. Install dependencies
+RUN bun install
 
-# Copy the entire prisma directory with all schema files
+# 4. Copy Prisma schema
 COPY prisma/ ./prisma/
 
-# Generate Prisma Client
-RUN bun run build
-
-# Copy the rest of the application
+# 5. Copy ALL other files
 COPY . .
 
-# Use PM2 to run App
+# 6. Build the application (including Prisma generation)
+RUN bun run build
+
+# 7. Runtime command
 CMD ["pm2-runtime", "dist/main.js"]
