@@ -3,18 +3,13 @@ FROM oven/bun:1.1-alpine
 WORKDIR /app
 
 # Install PM2 globally using npm instead of bun
-RUN apk add --no-cache nodejs npm && \
-    npm install -g pm2
+RUN apk add --no-cache nodejs npm && npm install -g pm2
 
-# Copy dependency files
-COPY package.json bun.lockb ./
-COPY prisma ./prisma/
+
+COPY . .
 
 # Install dependencies
 RUN bun install --frozen-lockfile
-
-# Copy app
-COPY . .
 
 # Generate Prisma Client
 RUN bunx prisma generate
