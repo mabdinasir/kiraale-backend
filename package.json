@@ -12,7 +12,7 @@
     "type": "module",
     "version": "1.0.0",
     "scripts": {
-        "build": "bun run tsc && bun run resolve-tspaths && prisma generate",
+        "build": "bunx prisma generate --schema=./prisma/schema && bun run tsc && bun run resolve-tspaths",
         "start": "bun run pm2 start dist/main.js --name kiraale-be",
         "dev": "bun --watch src/main.ts",
         "type-check": "bun run tsc --noEmit --watch",
