@@ -2,11 +2,11 @@
 /* eslint-disable require-atomic-updates */
 import type { RequestHandler } from 'express'
 import { prisma } from '@lib/prismaClient'
-import { authorizationSchema } from '@schemas/index'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import dotenv from 'dotenv'
 import { verifyJwtToken } from '@lib/utils/auth/generateJwtToken'
+import { authorizationSchema } from '@schemas/auth.schema'
 
 dotenv.config()
 
